@@ -21,6 +21,30 @@ const EMPTY = { type: 'FeatureCollection', features: [] } as const
 
 const LEVEL_COLORS: any[] = LEVELS.flatMap((level) => [level.nivel, level.color])
 
+/**
+ * El contorno del Perú hecho con los departamentos: los bordes que tiene un solo departamento son los del país (los que
+ * comparten dos son límites entre departamentos). Los mosaicos de calles traen el límite del país, pero solo desde el
+ * zoom 5: con el Perú entero a la vista no lo dibujaban.
+ */
+function peruOutline(departments: Department[]) {
+  const key = ([x, y]: number[]) => `${x!.toFixed(5)},${y!.toFixed(5)}`
+  const seen = new Map<string, { segment: number[][]; count: number }>()
+  for (const department of departments) {
+    for (const ring of department.rings) {
+      for (let i = 0; i + 1 < ring.length; i++) {
+        const a = ring[i]!
+        const b = ring[i + 1]!
+        const id = [key(a), key(b)].sort().join('|')
+        const entry = seen.get(id)
+        if (entry) entry.count++
+        else seen.set(id, { segment: [a, b], count: 1 })
+      }
+    }
+  }
+  const lines = [...seen.values()].filter((entry) => entry.count === 1).map((entry) => entry.segment)
+  return { type: 'Feature' as const, properties: {}, geometry: { type: 'MultiLineString' as const, coordinates: lines } }
+}
+
 function style(data: AppData): StyleSpecification {
   return {
     version: 8,
@@ -33,6 +57,7 @@ function style(data: AppData): StyleSpecification {
       'prov-foco': { type: 'geojson', data: EMPTY },
       'formas-hover': { type: 'geojson', data: EMPTY },
       'dist-seleccion': { type: 'geojson', data: EMPTY },
+      'peru-contorno': { type: 'geojson', data: peruOutline(data.departments) },
     },
     layers: [
       { id: 'fondo', type: 'background', paint: { 'background-color': '#ECEFF3' } },
@@ -109,11 +134,22 @@ function style(data: AppData): StyleSpecification {
         filter: ['all', ['==', ['get', 'admin_level'], 4], ['==', ['get', 'maritime'], 0]],
         paint: { 'line-color': '#4A5866', 'line-opacity': 0.8, 'line-width': ['interpolate', ['linear'], ['zoom'], 4, 0.8, 10, 1.6] },
       },
+      // El país: con el Perú entero a la vista, el contorno hecho con los departamentos; más cerca, el límite de los
+      // mosaicos, que tiene más detalle
+      {
+        id: 'contorno-peru',
+        type: 'line',
+        source: 'peru-contorno',
+        maxzoom: 5,
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: { 'line-color': '#17202A', 'line-opacity': 0.9, 'line-width': 1.4 },
+      },
       {
         id: 'limite-peru',
         type: 'line',
         source: 'calles',
         'source-layer': 'boundary',
+        minzoom: 5,
         filter: ['all', ['==', ['get', 'admin_level'], 2], ['==', ['get', 'maritime'], 0], ['any', ['==', ['get', 'adm0_l'], 'PER'], ['==', ['get', 'adm0_r'], 'PER']]],
         paint: { 'line-color': '#17202A', 'line-opacity': 0.9, 'line-width': ['interpolate', ['linear'], ['zoom'], 4, 1.4, 10, 3] },
       },
