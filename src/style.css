@@ -62,10 +62,11 @@ a { color: var(--blue); }
 .rain-close:hover { background: #f3f6f8; }
 /* La escala de la lluvia (logarítmica, de 0,1 a 53 mm/h): los mismos colores que src/escala.ts */
 .rain-scale { height: 8px; border-radius: 4px; background: linear-gradient(90deg, rgb(160,214,250) 0%, rgb(90,170,240) 30%, rgb(40,110,225) 50%, rgb(40,50,180) 68%, rgb(100,30,170) 82%, rgb(160,20,150) 100%); }
-/* La escala en palabras, con los cortes de lluvia por hora (escala logarítmica de 0,1 a 53 mm/h, ver src/escala.ts):
-   llovizna hasta 2 mm/h (48 %), moderada hasta 15 (80 %), fuerte desde ahí */
-.rain-ticks { position: relative; height: 15px; font-size: 11px; font-weight: 600; color: #33404d; }
-.rain-ticks span { position: absolute; top: 0; text-align: center; white-space: nowrap; }
+/* La escala en palabras y, debajo, en mm por hora, con los cortes de lluvia por hora (escala logarítmica de 0,1 a 53
+   mm/h, ver src/escala.ts): llovizna hasta 2 mm/h (48 %), moderada hasta 15 (80 %), fuerte desde ahí */
+.rain-ticks { position: relative; height: 28px; font-size: 11px; font-weight: 600; color: #33404d; }
+.rain-ticks span { position: absolute; top: 0; display: flex; flex-direction: column; align-items: center; line-height: 1.25; white-space: nowrap; }
+.rain-ticks small { font-size: 10px; font-weight: 400; color: var(--muted); }
 .rain-ticks span + span { border-left: 1px solid #9aa7b4; }
 .rain-ticks span:nth-child(1) { left: 0; width: 48%; }
 .rain-ticks span:nth-child(2) { left: 48%; width: 32%; }
@@ -150,8 +151,8 @@ a { color: var(--blue); }
 /* La leyenda y la lluvia van sueltas sobre el mapa (cada una con su posición); el contenedor no se ve */
 #dock { display: contents; }
 
-/* En una pantalla angosta: el mapa arriba y el panel debajo, que se desplaza. Sobre el mapa flotan el buscador, la
-   lluvia (debajo del buscador, a todo el ancho) y la leyenda del aviso (abajo a la izquierda). */
+/* En una pantalla angosta: el mapa arriba y el panel debajo, que se desplaza. Sobre el mapa flotan el buscador y la
+   leyenda del aviso (arriba) y la lluvia (abajo, a todo el ancho, donde llega el pulgar). */
 @media (max-width: 800px) {
   :root { --panel: 100vw; --map-height: 60dvh; }
   body { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
@@ -159,22 +160,19 @@ a { color: var(--blue); }
   #panel { position: relative; inset: auto; order: 3; flex: 1; min-height: 0; width: 100%; border-right: 0; }
   #dock .float { box-shadow: 0 1px 6px rgba(23, 32, 42, 0.18); }
 
-  /* La leyenda, una pastilla de una línea: «Aviso ● 1 Amarillo ● 2 Naranja ● 3 Rojo» */
-  #legend {
-    left: 8px; right: auto; top: calc(var(--map-height) - 34px); bottom: auto;
-    flex-direction: row; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 999px;
-  }
+  /* La leyenda, chica, arriba a la izquierda del buscador: «Aviso» y los tres niveles uno debajo del otro */
+  #legend { left: 8px; right: auto; top: 8px; bottom: auto; gap: 3px; padding: 6px 10px; border-radius: 10px; }
   #legend b { font-size: 11px; }
   #legend .legend-long, #legend .bar { display: none; }
-  #legend .names { display: flex; gap: 10px; width: auto; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  #legend .names { display: flex; flex-direction: column; gap: 3px; width: auto; font-size: 11px; font-weight: 600; white-space: nowrap; }
   #legend .names span { display: inline-flex; align-items: center; gap: 5px; }
   #legend .names span::before { content: ''; width: 10px; height: 10px; border-radius: 50%; }
   #legend .names span:nth-child(1)::before { background: #F4C430; }
   #legend .names span:nth-child(2)::before { background: #EE7D2B; }
   #legend .names span:nth-child(3)::before { background: #C3262F; }
 
-  /* La lluvia, compacta y debajo del buscador */
-  #lluvia { top: 56px; left: 8px; right: 8px; bottom: auto; border-radius: 12px; }
+  /* La lluvia, compacta, al pie del mapa (encima del botón «i» de la atribución) */
+  #lluvia { top: auto; left: 8px; right: 8px; bottom: calc(100dvh - var(--map-height) + 40px); border-radius: 12px; }
   #lluvia:has(.rain-open:not([hidden])) { left: auto; }
   .rain-open { height: 34px; padding: 0 12px; font-size: 12px; }
   .rain-controls { width: 100%; padding: 6px 10px 4px; gap: 3px; }
