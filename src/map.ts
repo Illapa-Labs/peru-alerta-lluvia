@@ -181,6 +181,17 @@ export async function createMap(container: HTMLElement, data: AppData, handlers:
   if (import.meta.env.DEV) (window as any).__map = map
   map.touchZoomRotate.enableRotation()
 
+  // En el celular la atribución empieza cerrada, en el botón «i» (MapLibre la abre al cargar los datos; se cierra apenas
+  // lo hace). En escritorio hay lugar y queda abierta.
+  const collapseAttribution = () => {
+    const attribution = container.querySelector('.maplibregl-ctrl-attrib.maplibregl-compact-show')
+    if (!attribution) return
+    attribution.classList.remove('maplibregl-compact-show')
+    attribution.removeAttribute('open')
+    map.off('sourcedata', collapseAttribution)
+  }
+  if (matchMedia('(max-width: 800px)').matches) map.on('sourcedata', collapseAttribution)
+
   // Un toque sin arrastrar pregunta por el lugar
   map.on('click', (event: MapMouseEvent) => handlers.onClick(event.lngLat.lng, event.lngLat.lat))
   map.on('moveend', () => {

@@ -282,7 +282,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
       const inZone = district.personas.reduce((a, b) => a + b, 0)
       const places = district.poblados.reduce((a, b) => a + b, 0)
       const lines = [text(titleCase(district.dist), 'district-name'), text(`${titleCase(district.prov)}${district.poblacion ? ` · ${number(district.poblacion)} habitantes` : ''}`, 'district-detail')]
-      if (places > 0) lines.push(text(`En zona de aviso: ${places} ${places === 1 ? 'centro poblado' : 'centros poblados'} · ${number(inZone)} personas`, 'district-detail'))
+      if (places > 0) lines.push(text(`En zona de aviso: ${places} ${places === 1 ? 'centro poblado' : 'centros poblados'} · ${number(inZone)} personas`, 'district-detail district-zone'))
       rows.append(districtRow(district.ubigeo, level.color, lines, level.name.toLowerCase()))
     }
     blocks.push(rows)

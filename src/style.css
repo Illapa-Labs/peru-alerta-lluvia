@@ -254,3 +254,17 @@ a { color: var(--blue); }
   .exposure { padding: 8px 10px; font-size: 13px; }
   .panel-footer { padding: 10px 14px 14px; font-size: 11px; }
 }
+
+/* Más apretado aún: en la lista de distritos basta el nombre y la provincia (el detalle de la zona está al abrir cada
+   uno), y la franja de la leyenda y la lluvia con menos aire */
+@media (max-width: 800px) {
+  .district-zone { display: none; }
+  .districts { gap: 4px; }
+  .districts li { padding: 3px 6px; margin: -3px -6px; }
+  .district-text { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 6px; }
+  .district-detail { font-size: 11px; }
+  #dock { gap: 4px; padding: 6px 12px 6px; }
+  .rain-open { height: 32px; }
+  .rain-play { width: 28px; height: 28px; }
+  .rain-controls { gap: 2px; }
+}
