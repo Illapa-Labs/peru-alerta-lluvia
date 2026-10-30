@@ -268,3 +268,11 @@ a { color: var(--blue); }
   .rain-play { width: 28px; height: 28px; }
   .rain-controls { gap: 2px; }
 }
+
+/* En el celular lo primero que se ve del aviso es el nivel y qué hacer; la explicación va después. La etiqueta
+   «Distrito · Piura» sobra: las migas de arriba ya lo dicen. */
+@media (max-width: 800px) {
+  .card .level-header { order: -2; }
+  .card .todo { order: -1; }
+  .crumbs ~ .place-name .label { display: none; }
+}
