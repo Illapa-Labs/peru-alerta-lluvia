@@ -38,8 +38,10 @@ a { color: var(--blue); }
 #search li { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 14px; cursor: pointer; }
 #search li[aria-selected='true'], #search li:hover { background: #f3f6f8; }
 #search li.empty { color: var(--muted); cursor: default; }
+#search .option-text { display: flex; flex-direction: column; min-width: 0; }
 #search .option-name { font-weight: 600; }
-#search .option-level { margin-left: auto; font-size: 12px; color: var(--muted); }
+#search .option-where { font-size: 12px; color: var(--muted); }
+#search .option-level { flex: none; margin-left: auto; font-size: 12px; color: var(--muted); white-space: nowrap; }
 
 #legend { left: calc(min(var(--panel), 45vw) + 20px); bottom: 36px; padding: 12px 14px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
 #legend b { font-size: 12px; color: #33404d; }
@@ -78,10 +80,7 @@ a { color: var(--blue); }
 .maplibregl-ctrl-attrib { font-size: 11px; }
 
 /* ---- El panel ---- */
-.panel-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--soft-line); display: flex; flex-direction: column; gap: 4px; }
-.kicker { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-.subtitle { margin: 0; font-size: 13px; color: var(--muted); }
-.icon { display: inline-flex; flex: none; }
+.peek-date.stale { color: #8e1c24; font-weight: 600; }
 
 .block { padding: 20px 24px 8px; display: flex; flex-direction: column; gap: 12px; }
 .block.tight { padding-top: 8px; }
@@ -152,8 +151,23 @@ a { color: var(--blue); }
 /* La leyenda y la lluvia van sueltas sobre el mapa (cada una con su posición); el contenedor no se ve */
 #dock { display: contents; }
 
-/* La hoja de abajo solo existe en el celular */
-.peek { display: none; }
+/* El resumen, primero en el panel: el lugar, su aviso, qué hacer y de cuándo es. Debajo va el detalle, que ya no repite
+   el nombre ni el nivel ni qué hacer. */
+.peek { display: flex; flex-direction: column; gap: 6px; padding: 20px 24px 18px; border-bottom: 1px solid var(--soft-line); background: #fff; }
+.peek-row { display: flex; align-items: center; gap: 12px; }
+/* El nivel, en un cuadrado de su color: «NIVEL» y el número de la escala del SENAMHI */
+.peek-badge { flex: none; width: 48px; height: 48px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; color: #fff; font-size: 22px; font-weight: 800; }
+.peek-badge-label { font-size: 8px; font-weight: 700; letter-spacing: 0.08em; }
+.peek-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.peek-place { font-size: 24px; font-weight: 800; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.peek-where { font-size: 13px; color: var(--muted); }
+.peek-more { flex: none; font-size: 12px; font-weight: 700; color: var(--blue); }
+.peek-level { font-size: 16px; font-weight: 700; }
+.peek-amount { font-size: 13px; font-weight: 400; white-space: nowrap; }
+.peek-todo { font-size: 14px; line-height: 1.45; color: var(--text); }
+.peek-hint { font-size: 13px; color: var(--muted); }
+.peek-date { font-size: 12px; color: var(--muted); }
+.place-name, .place > .card > .level-header, .place > .card > .todo, .place > .card > .card-title { display: none; }
 
 /* En una pantalla angosta el mapa ocupa toda la pantalla. El panel es una hoja al pie: cerrada muestra el lugar, su
    aviso y qué hacer (--sheet es su alto, lo pone main.ts); abierta, todo el detalle. Sobre el mapa flotan el buscador
@@ -167,23 +181,18 @@ a { color: var(--blue); }
   }
   #panel.sheet-open { height: 85dvh; overflow-y: auto; }
   #panel:not(.sheet-open) > :not(.peek) { display: none; }
-  .peek {
-    position: sticky; top: 0; z-index: 1; display: flex; flex-direction: column; gap: 4px; width: 100%;
-    padding: 6px 14px 12px; border: 0; border-bottom: 1px solid var(--soft-line); background: #fff; text-align: left; cursor: pointer;
-  }
+  .peek { position: sticky; top: 0; z-index: 1; gap: 4px; width: 100%; padding: 6px 14px 12px; text-align: left; cursor: pointer; }
   .peek-handle { align-self: center; width: 36px; height: 4px; margin-bottom: 4px; border-radius: 2px; background: #c3ccd5; }
-  .peek-row { display: flex; align-items: center; gap: 10px; }
-  .peek-badge { flex: none; width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; font-weight: 800; }
-  .peek-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-  .peek-place { font-size: 18px; font-weight: 800; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .peek-where { font-size: 12px; color: var(--muted); }
-  .peek-more { flex: none; font-size: 12px; font-weight: 700; color: var(--blue); }
-  .peek-level { font-size: 13px; font-weight: 700; }
-  .peek-amount { font-size: 12px; font-weight: 400; white-space: nowrap; }
-  /* Abierta, el nombre del lugar ya está en la cabecera de la hoja */
-  #panel .place-name { display: none; }
-  .peek-todo { font-size: 13px; line-height: 1.4; color: var(--text); }
-  .peek-hint { font-size: 12px; color: var(--muted); }
+  .peek-row { gap: 10px; }
+  .peek-badge { width: 40px; height: 40px; border-radius: 10px; font-size: 18px; }
+  .peek-badge-label { font-size: 7px; }
+  .peek-place { font-size: 18px; }
+  .peek-where { font-size: 12px; }
+  .peek-level { font-size: 13px; }
+  .peek-amount { font-size: 12px; }
+  .peek-todo { font-size: 13px; line-height: 1.4; }
+  .peek-hint { font-size: 12px; }
+  .peek-date { font-size: 11px; }
 
   /* La atribución («i») va debajo del buscador */
   #mapa .maplibregl-ctrl-top-right { top: 46px; }
@@ -216,6 +225,9 @@ a { color: var(--blue); }
 
   #search { top: 8px; right: 8px; width: min(220px, calc(100vw - 16px)); }
   #search input { height: 40px; }
+  /* Al buscar, el buscador usa todo el ancho (tapa la leyenda mientras tanto) para que los nombres entren en una línea */
+  #search:focus-within { width: calc(100vw - 16px); }
+  #search li { padding: 8px; }
 }
 
 /* El atributo hidden tiene que ganarle a cualquier display que se ponga */
@@ -253,7 +265,6 @@ a { color: var(--blue); }
 /* En el celular el panel va apretado: sin el encabezado (la leyenda ya dice qué es) y con menos aire, para que el mapa
    tenga más alto. Va al final para ganarle a las reglas de arriba. */
 @media (max-width: 800px) {
-  .panel-header { display: none; }
   .block { padding: 12px 14px 4px; gap: 8px; }
   .block.tight { padding-top: 4px; }
   .block h2 { font-size: 11px; }
@@ -296,12 +307,4 @@ a { color: var(--blue); }
   .districts li { padding: 3px 6px; margin: -3px -6px; }
   .district-text { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 6px; }
   .district-detail { font-size: 11px; }
-}
-
-/* En el celular lo primero que se ve del aviso es el nivel y qué hacer; la explicación va después. La etiqueta
-   «Distrito · Piura» sobra: las migas de arriba ya lo dicen. */
-@media (max-width: 800px) {
-  .card .level-header { order: -2; }
-  .card .todo { order: -1; }
-  .crumbs ~ .place-name .label { display: none; }
 }

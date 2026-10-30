@@ -101,8 +101,9 @@ Prioridad: **Debe** (sin esto no sirve), **Debería** (importante, puede esperar
 | El mapa es lo primero: las zonas de aviso se ven al abrir | Debe | 1, 3, 4 | Sí |
 | Tocar un lugar en el mapa dice su nivel y qué hacer, sin abrir nada más | Debe | 1 | Sí (hoja cerrada) |
 | Cada lugar tiene su dirección, y el enlace abre ese lugar | Debe | 2, 5 | Sí |
-| Decir de qué fecha es el aviso y que es para 24 horas | Debe | 1, 6 | Solo en la computadora |
-| Buscar un **distrito** o una provincia por su nombre, no solo un departamento | Debe | 1, 5 | No: solo departamentos |
+| Decir de qué fecha es el aviso y que es para 24 horas, y avisar si ya no está al día | Debe | 1, 6 | Sí |
+| Buscar un **distrito** o una provincia por su nombre, no solo un departamento | Debe | 1, 5 | Sí |
+| Buscar por el nombre del pueblo o la ciudad (Chosica está en el distrito de Lurigancho) | Debería | 1 | No |
 | La fuente (SENAMHI), que no es un sitio oficial y los teléfonos de emergencia (115, 116) | Debe | 6 | Sí (al abrir la hoja) |
 | La lluvia de las últimas horas y el pronóstico, con los controles al alcance del pulgar | Debería | 3 | Sí |
 | Un botón de compartir (el menú del teléfono) con el texto del aviso | Debería | 5 | No |
@@ -131,6 +132,8 @@ Prioridad: **Debe** (sin esto no sirve), **Debería** (importante, puede esperar
 4. **Palabras antes que números.** «Lluvia muy fuerte», y debajo «80 mm o más en 24 h».
 5. **El color nunca solo.** La leyenda dice qué significa cada color.
 6. **Al alcance del pulgar.** Controles abajo; arriba, solo lo que se lee.
+7. **Informar, no alarmar.** El nivel se dice con la escala del SENAMHI, en un cuadrado de su color con su número, y al lado su palabra: 1 verde (sin aviso: no se espera lluvia peligrosa), 2 amarillo, 3 naranja, 4 rojo. Sin aviso también se dice, en verde, para que quede claro que todo está normal. Sin signos de alarma.
+8. **La misma línea en el celular y en la computadora.** Primero el resumen (lugar, nivel, qué hacer, fecha), después el detalle. En la computadora el detalle ya está a la vista; en el celular, a un toque.
 
 ## Cómo medir (HEART, sin cookies)
 

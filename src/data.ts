@@ -5,6 +5,7 @@ import { api } from './api'
 
 /** Un nivel del aviso. El SENAMHI tiene tres: amarillo, naranja y rojo. */
 export interface Level {
+  /** El número del nivel en la escala del SENAMHI: 1 verde (sin aviso), 2 amarillo, 3 naranja, 4 rojo */
   n: number
   /** Cómo lo nombran los datos (su Nivel 1 no es un aviso y se deja fuera) */
   nivel: string
@@ -25,7 +26,7 @@ export interface Level {
 
 export const LEVELS: Level[] = [
   {
-    n: 1, nivel: 'Nivel 2', short: 'Amarillo', name: 'Aviso amarillo',
+    n: 2, nivel: 'Nivel 2', short: 'Amarillo', name: 'Aviso amarillo',
     color: '#F4C430', strong: '#B08A10', soft: '#FDF6DC', border: '#EBD58A', ink: '#4A3A06',
     mm: '10 mm o más', rain: 'Lluvia moderada · 10 mm o más en 24 h',
     means: 'Lluvia de intensidad moderada. Algunas quebradas pueden llevar más agua de lo normal.',
@@ -34,7 +35,7 @@ export const LEVELS: Level[] = [
     hereTodo: 'Mantente informado y revisa el aviso otra vez mañana.',
   },
   {
-    n: 2, nivel: 'Nivel 3', short: 'Naranja', name: 'Aviso naranja',
+    n: 3, nivel: 'Nivel 3', short: 'Naranja', name: 'Aviso naranja',
     color: '#EE7D2B', strong: '#B5571A', soft: '#FDEDE1', border: '#F0C09A', ink: '#5A2A0A',
     mm: '40 mm o más', rain: 'Lluvia fuerte · 40 mm o más en 24 h',
     means: 'Lluvia de intensidad fuerte. Las quebradas pueden activarse en las zonas expuestas.',
@@ -43,7 +44,7 @@ export const LEVELS: Level[] = [
     hereTodo: 'Evita cruzar quebradas y cauces secos. Reprograma tus viajes por carretera si es posible.',
   },
   {
-    n: 3, nivel: 'Nivel 4', short: 'Rojo', name: 'Aviso rojo',
+    n: 4, nivel: 'Nivel 4', short: 'Rojo', name: 'Aviso rojo',
     color: '#C3262F', strong: '#A3222C', soft: '#FBECEC', border: '#EBC3C5', ink: '#5E1218',
     mm: '80 mm o más', rain: 'Lluvia muy fuerte · 80 mm o más en 24 h',
     means: 'Lluvia de intensidad muy fuerte. Las quebradas pueden activarse y llegar a zonas pobladas.',
@@ -52,6 +53,18 @@ export const LEVELS: Level[] = [
     hereTodo: 'Aléjate de quebradas y ríos. Sigue las indicaciones de las autoridades.',
   },
 ]
+
+/** El nivel 1 (verde) de la escala del SENAMHI: no hay aviso. No se pinta en el mapa; se dice en el resumen, para que
+ * quede claro que no se espera nada fuera de lo normal. */
+export const CALM = {
+  n: 1,
+  color: '#3E9B5F',
+  strong: '#2F7D4A',
+  ink: '#1E4D2E',
+  name: 'Sin aviso',
+  says: 'No se espera lluvia peligrosa',
+  todo: 'Nada especial. Revisa el aviso otra vez mañana.',
+}
 
 export type Ring = number[][]
 

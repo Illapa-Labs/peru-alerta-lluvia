@@ -26,7 +26,7 @@ Un proyecto de [Illapa Labs](https://github.com/Illapa-Labs): proyecto comunitar
 
 ### El aviso de tu departamento
 
-Elige un departamento en el buscador o tocándolo en el mapa: el panel dice el nivel más alto del aviso, qué parte del departamento cubre cada nivel, qué hacer, y la lista de distritos con aviso con su población y cuánta gente vive en zonas donde pueden activarse las quebradas.
+Busca tu distrito, provincia o departamento, o tócalo en el mapa. En un departamento, el panel dice el nivel más alto del aviso, qué parte del departamento cubre cada nivel, qué hacer, y la lista de distritos con aviso con su población y cuánta gente vive en zonas donde pueden activarse las quebradas.
 
 ![Piura con aviso rojo: el nivel, qué parte del departamento cubre cada nivel, qué hacer y los distritos con aviso](docs/capturas/departamento.jpg)
 

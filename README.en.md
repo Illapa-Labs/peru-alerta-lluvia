@@ -26,7 +26,7 @@ A project of [Illapa Labs](https://github.com/Illapa-Labs): a community open sou
 
 ### The warning for your department
 
-Pick a department in the search box or by tapping the map: the panel shows the highest warning level, how much of the department each level covers, what to do, and the districts with a warning, with their population and how many people live where ravines may activate.
+Search for your district, province or department, or tap it on the map. For a department, the panel shows the highest warning level, how much of the department each level covers, what to do, and the districts with a warning, with their population and how many people live where ravines may activate.
 
 ![Piura under a red warning: the level, how much of the department each level covers, what to do and the districts with a warning](docs/capturas/departamento.jpg)
 
