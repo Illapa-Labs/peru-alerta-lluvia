@@ -1,7 +1,7 @@
 // La lluvia de las últimas 24 horas y la pronosticada para las próximas 24, hora por hora, sobre el mapa.
 // - Lo que ya cayó: la de la NASA (GPM IMERG), unos 10 km, cada 30 minutos, con unas 6 horas de retraso, en mosaicos
 //   de NASA GIBS. (La del satélite GOES-19, más fina y casi al momento, volverá cuando la sirva la API de Illapa.)
-// - Después de ahora, el pronóstico de Open-Meteo, que sirve la API (src/pronostico.ts).
+// - Después de ahora, el pronóstico que sirve la API (src/pronostico.ts), con el crédito que ella indica.
 // Al abrir el mapa se muestra la lluvia de ahora (una sola imagen). El resto se baja recién cuando se toca el «play»
 // o la barra: entonces se piden todas las horas a la vez, para que la reproducción no espere.
 
@@ -9,7 +9,7 @@ import { addProtocol, type Map as GlMap } from 'maplibre-gl'
 import type { Ring } from './data'
 import { PALETTE, colorIndex } from './escala'
 import { NASA_RAIN_COLORS } from './lluvia-nasa-colores'
-import { forecastFrames } from './pronostico'
+import { forecastCredit, forecastFrames } from './pronostico'
 
 const GIBS = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best'
 /** Los mosaicos de la NASA se piden con este protocolo, que los vuelve a pintar (ver `recolor`) */
@@ -197,11 +197,11 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     frames = [...past, ...future.map(({ time, url, coordinates }) => ({ time, forecast: true, source: { type: 'image' as const, url, coordinates } }))]
     note.textContent = [
       'Lo que ya cayó: satélite de la NASA, con unas 6 horas de retraso.',
-      future.length ? 'Lo que viene: pronóstico de Open-Meteo.com (CC BY 4.0), unos 22 km, por hora.' : '',
+      future.length ? `Lo que viene: ${forecastCredit()}, unos 22 km, por hora.` : '',
     ].join(' ')
     const attribution = 'Lluvia: NASA GPM IMERG (GIBS)'
     frames.forEach((frame, i) => {
-      // Los mosaicos de la NASA van en una capa cada uno (el crédito de Open-Meteo va en la nota)
+      // Los mosaicos de la NASA van en una capa cada uno (el crédito del pronóstico va en la nota)
       if (frame.source.type !== 'raster') return
       map.addSource(layerId(i), { ...frame.source, ...(i === 0 ? { attribution } : {}) })
       // Debajo del aviso (que tiene prioridad), encima del relieve. Todas a la vez (invisibles) para que ya estén bajadas.

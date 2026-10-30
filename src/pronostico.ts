@@ -1,4 +1,4 @@
-// El pronóstico de lluvia de las próximas horas (Open-Meteo, en una malla de unos 22 km que sirve la API de Illapa)
+// El pronóstico de lluvia de las próximas horas (del modelo que elige la API de Illapa, en una malla de unos 22 km)
 // dibujado como imágenes suaves: entre punto y punto se interpola, y se recorta al contorno del Perú.
 
 import { api } from './api'
@@ -14,7 +14,14 @@ interface Pronostico {
   columnas: number
   filas: number
   valores: number[][]
+  /** El crédito y la licencia de los datos, que hay que mostrar (los da la API según el modelo que usa) */
+  fuente?: string
+  licencia?: string
 }
+
+/** El crédito del último pronóstico bajado. Si la API no lo dice, el de Open-Meteo. */
+let credit = 'pronóstico de Open-Meteo.com (CC BY 4.0)'
+export const forecastCredit = () => credit
 
 export interface ForecastFrame {
   time: Date
@@ -40,6 +47,11 @@ export async function forecastFrames(peru: Ring[], after: number): Promise<Forec
     data = await response.json()
   } catch {
     return []
+  }
+  if (data.fuente) {
+    // «Pronóstico: UK Met Office…» → «pronóstico de UK Met Office…», para que la nota se lea de corrido
+    const source = data.fuente.replace(/^pronóstico:\s*/i, 'pronóstico de ')
+    credit = data.licencia ? `${source} (${data.licencia})` : source
   }
   const { oeste: gridWest, norte: gridNorth, paso: step, columnas: cols, filas: rows } = data
   const [west, south, east, north] = BOUNDS
