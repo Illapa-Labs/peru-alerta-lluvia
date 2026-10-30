@@ -190,3 +190,7 @@ a { color: var(--blue); }
 .crumb.here { font-weight: 700; color: var(--text); }
 .crumb-separator { color: var(--muted); }
 .place-title { margin-top: 2px; }
+
+/* Solo para buscadores y lectores de pantalla: no se ve, pero se lee */
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.noscript { padding: 16px 24px; font-size: 16px; }
