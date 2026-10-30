@@ -82,12 +82,14 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   let province: { name: string; distritos: Shape[] } | undefined
   let chosen: { shape: Shape; province: string } | undefined
   let showAllDistricts = false
-  let picked = highest ?? 0
+  // El nivel que se mira en «Qué significa cada nivel»: un índice en LEVELS, o -1 para el verde (sin aviso)
+  let picked = highest ?? -1
+  const narrow = matchMedia('(max-width: 800px)').matches
 
   const placeBody = el('div', 'place')
   const nearBody = el('div', 'what')
   const exposureBody = el('div', 'what')
-  const scale = el('div')
+  const scale = el('div', 'scale')
   const official = el('div', 'official')
 
   // ---- De qué día es el aviso ----
@@ -170,9 +172,8 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   }
 
   function homeCard(home: Home) {
-    if (home.highest === undefined) {
-      return card('#F3F6F8', '#D5DCE3', text('Sin aviso hoy', 'card-title'), el('p', 'body', `Hoy no hay un aviso de lluvia en ningún lugar de ${home.name}. Aun así, mantente atento a la información oficial.`))
-    }
+    // Sin aviso no hay más que decir: el resumen ya lo dice, en verde
+    if (home.highest === undefined) return document.createDocumentFragment()
     const level = LEVELS[home.highest]!
     const rows = [...LEVELS.keys()]
       .reverse()
@@ -213,9 +214,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   function districtMain(shape: Shape) {
     const info: District | undefined = data.districts.find((district) => district.ubigeo === shape.ubigeo)
     const level = info ? LEVELS[info.nivel - 2] : undefined
-    if (!level || !info) {
-      return card('#F3F6F8', '#D5DCE3', text('Sin aviso hoy', 'card-title'), el('p', 'body', 'Hoy no hay un aviso de lluvia en este distrito.'))
-    }
+    if (!level || !info) return document.createDocumentFragment()
     const places = info.poblados.reduce((a, b) => a + b, 0)
     const inZone = info.personas.reduce((a, b) => a + b, 0)
     return card(
@@ -233,9 +232,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     const levels = new Map(data.districts.map((district) => [district.ubigeo, district.nivel]))
     const flagged = focus.distritos.filter((shape) => levels.has(shape.ubigeo))
     const top = flagged.reduce((top, shape) => Math.max(top, levels.get(shape.ubigeo)! - 2), -1)
-    if (top < 0) {
-      return card('#F3F6F8', '#D5DCE3', text('Sin aviso hoy', 'card-title'), el('p', 'body', 'Hoy no hay un aviso de lluvia en ningún distrito de esta provincia.'))
-    }
+    if (top < 0) return document.createDocumentFragment()
     const level = LEVELS[top]!
     const rows = [...LEVELS.keys()].reverse().flatMap((index) => {
       const n = flagged.filter((shape) => levels.get(shape.ubigeo)! - 2 === index).length
@@ -263,7 +260,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
       const nivel = levels.get(shape.ubigeo)
       const level = nivel ? LEVELS[nivel - 2] : undefined
       const lines = [text(titleCase(shape.name), 'district-name'), text(`${number(shape.population)} habitantes`, 'district-detail')]
-      rows.append(districtRow(shape.ubigeo, level ? level.color : '#D5DCE3', lines, level ? level.name.toLowerCase() : 'sin aviso'))
+      rows.append(districtRow(shape.ubigeo, level ? level.color : CALM.color, lines, level ? level.name.toLowerCase() : 'sin aviso'))
     }
     blocks.push(rows)
     if (sorted.length > 8) blocks.push(moreButton(sorted.length))
@@ -372,14 +369,17 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   if (parts.length > 0) {
     nationalText.append(el('strong', '', `En todo el Perú hay ${parts[0]}`), `${parts.length > 1 ? ` y ${parts.slice(1).join(' y ')}` : ''} en este aviso. Si vas a viajar a la sierra o vives cerca de una quebrada, infórmate.`)
   } else {
-    nationalText.textContent = 'Hoy no hay avisos naranja ni rojo en el país.'
+    nationalText.textContent = 'En este aviso no hay zonas naranja ni rojas en el país.'
   }
   const nationalBody = el('div', 'what', nationalText)
 
   // ---- Los niveles ----
   function renderScale() {
-    const mine = shown && withDistricts(shown.home, data.districts).highest
-    const buttons = LEVELS.map((level, index) => {
+    // Los cuatro niveles de la escala del SENAMHI: el verde (sin aviso, índice -1) y los tres del aviso
+    const home = shown && withDistricts(shown.home, data.districts)
+    const mine = home ? (home.highest ?? -1) : undefined
+    const scaleLevels = [{ level: CALM, index: -1 }, ...LEVELS.map((level, index) => ({ level, index }))]
+    const buttons = scaleLevels.map(({ level, index }) => {
       const bar = el('span', 'bar')
       bar.style.background = level.color
       const number = el('span', 'level-number', text(String(level.n), ''), mine === index ? text('AQUÍ', 'mine') : '')
@@ -392,12 +392,12 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
       })
       return button
     })
-    const level = LEVELS[picked]!
+    const level = picked < 0 ? CALM : LEVELS[picked]!
     const swatch = swatchOf(level.color, 'swatch big')
-    const total = areas.length === 0 ? '–' : zones(count(picked))
+    const total = areas.length === 0 || picked < 0 ? '–' : zones(count(picked))
     const box = (title: string, value: string) => el('div', 'stat', text(title, 'label small'), text(value, 'stat-value'))
     scale.replaceChildren(
-      el('p', 'small muted', 'Toca un nivel para ver qué significa y qué hacer.'),
+      el('p', 'small muted', `${narrow ? 'Toca' : 'Elige'} un nivel para ver qué significa y qué hacer.`),
       el('div', 'levels', ...buttons),
       el('div', 'between small muted', text('Menos lluvia', ''), text('Más lluvia', '')),
       el(
@@ -429,6 +429,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     official.append(el('p', 'small muted', issued.join(' · ')))
     if (area.descripcio) official.append(el('p', 'quote', `“${area.descripcio}”`))
     if (area.recomendac) official.append(el('p', 'quote', el('strong', '', 'Recomendación: '), `“${area.recomendac}”`))
+    official.append(el('p', 'small muted', 'Capas del SENAMHI: g_prono_pp_24h (aviso de lluvia) y g_acti_quebrada (activación de quebradas).'))
   }
 
   function fold(title: string, content: HTMLElement) {
@@ -455,7 +456,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   const folds = el(
     'section',
     'block folds',
-    ...fold('Los 3 niveles de aviso', scale),
+    ...fold('Qué significa cada nivel', scale),
     ...fold('Personas en zonas con aviso', exposureBody),
     ...fold('Departamentos cercanos', nearBody),
     ...fold('Resumen de todo el Perú', nationalBody),
@@ -473,11 +474,16 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   link.href = 'https://www.senamhi.gob.pe'
   link.target = '_blank'
   link.rel = 'noopener'
+  const lab = el('a', '', 'Illapa Labs')
+  lab.href = 'https://illapalabs.org'
   footer.append(
-    'Fuente: ',
+    'Fuente de los avisos: ',
     link,
-    ', capas g_prono_pp_24h (aviso de lluvia) y g_acti_quebrada (activación de quebradas). ',
-    el('strong', '', 'No es un sitio oficial. '),
+    '. ',
+    el('strong', '', 'No es un sitio oficial: '),
+    'es un proyecto comunitario de ',
+    lab,
+    ', sin fines de lucro. ',
     'Ante una emergencia llama al ',
     el('strong', '', '115'),
     ' (INDECI) o al ',
@@ -489,7 +495,6 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   // ---- El resumen: el lugar, su aviso, qué hacer y de cuándo es ----
   // Va primero en el panel, en el celular y en la computadora; el detalle va debajo. En el celular el panel es una hoja
   // al pie del mapa: cerrada muestra solo el resumen, y con un toque en él se abre con todo el detalle.
-  const narrow = matchMedia('(max-width: 800px)').matches
   const peek = el('div', 'peek')
   const setOpen = (open: boolean) => {
     root.classList.toggle('sheet-open', open)
@@ -567,7 +572,15 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     renderOfficial()
   }
 
-  root.replaceChildren(peek, el('section', 'block', placeBody), folds, footer)
+  // ---- La marca, arriba a la izquierda en la computadora: lleva a la página de Illapa Labs ----
+  const logo = el('img', 'brand-logo')
+  logo.src = '/chakana.svg'
+  logo.alt = ''
+  const brand = el('a', 'brand', logo, el('span', 'brand-text', text('Perú Alerta Lluvia', 'brand-name'), text('Illapa Labs', 'brand-lab')))
+  brand.href = 'https://illapalabs.org'
+  brand.title = 'Illapa Labs: herramientas abiertas para el clima y los peligros naturales del Perú'
+
+  root.replaceChildren(brand, peek, el('section', 'block', placeBody), folds, footer)
   setOpen(false)
   update()
 
@@ -578,7 +591,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
       if (shown?.home.name === department.name && shown.source === source) return
       const home = homeOf(department, 70)
       const neighbors = neighborsOf(department, departments).map((other) => homeOf(other, 28))
-      if (home.highest !== undefined) picked = home.highest
+      picked = home.highest ?? -1
       chosen = undefined
       showAllDistricts = false
       shown = { home, neighbors, source }

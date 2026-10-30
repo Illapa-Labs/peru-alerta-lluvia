@@ -3,7 +3,7 @@
 // Las provincias y los distritos salen de las formas de los distritos, que se empiezan a bajar al tocar el buscador
 // (con buena conexión ya están bajadas).
 
-import { type AppData, type Department, type Shapes, LEVELS, loadShapes, normalize, ranked, titleCase } from './data'
+import { CALM, type AppData, type Department, type Shapes, LEVELS, loadShapes, normalize, ranked, titleCase } from './data'
 
 /** Lo que se eligió en el buscador */
 export type Place =
@@ -128,7 +128,7 @@ export function setupSearch(data: AppData, onSelect: (place: Place) => void) {
       item.setAttribute('role', 'option')
       const swatch = document.createElement('span')
       swatch.className = 'swatch'
-      swatch.style.background = option.level === undefined ? '#D5DCE3' : LEVELS[option.level]!.color
+      swatch.style.background = option.level === undefined ? CALM.color : LEVELS[option.level]!.color
       const text = document.createElement('span')
       text.className = 'option-text'
       const name = document.createElement('span')

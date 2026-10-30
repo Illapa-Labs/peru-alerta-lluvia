@@ -61,8 +61,12 @@ export const CALM = {
   color: '#3E9B5F',
   strong: '#2F7D4A',
   ink: '#1E4D2E',
+  soft: '#EAF6EE',
+  short: 'Verde',
   name: 'Sin aviso',
   says: 'No se espera lluvia peligrosa',
+  mm: 'menos de 10 mm',
+  means: 'Puede llover, pero no se espera lluvia peligrosa: lo normal para la zona.',
   todo: 'Nada especial. Revisa el aviso otra vez mañana.',
 }
 
