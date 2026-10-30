@@ -3,10 +3,63 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Alerta Lluvia · zonas con aviso de lluvias fuertes en el Perú</title>
-  <meta name="description" content="Zonas del Perú con aviso de lluvias fuertes. Información del SENAMHI. No es un sitio oficial.">
+  <title>Perú Alerta Lluvia · aviso de lluvias fuertes por distrito</title>
+  <meta name="description" content="Avisos de lluvias fuertes del SENAMHI en el Perú por departamento, provincia y distrito, con la lluvia de las últimas horas y el pronóstico. No es oficial.">
+  <link rel="canonical" href="https://alerta.illapalabs.org/">
+  <meta name="theme-color" content="#0B3A5C">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <!-- Al compartir el enlace (WhatsApp, Facebook, Telegram, LinkedIn): título, descripción e imagen -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Perú Alerta Lluvia · Illapa Labs">
+  <meta property="og:locale" content="es_PE">
+  <meta property="og:url" content="https://alerta.illapalabs.org/">
+  <meta property="og:title" content="Perú Alerta Lluvia: ¿hay aviso de lluvias fuertes en tu distrito?">
+  <meta property="og:description" content="Las zonas con aviso del SENAMHI por departamento, provincia y distrito, la lluvia de las últimas horas y el pronóstico. Gratis y sin anuncios. No es un sitio oficial.">
+  <meta property="og:image" content="https://alerta.illapalabs.org/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Perú Alerta Lluvia: mapa del Perú y los tres niveles de aviso del SENAMHI (amarillo, naranja y rojo)">
+  <!-- X (Twitter) -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Perú Alerta Lluvia: ¿hay aviso de lluvias fuertes en tu distrito?">
+  <meta name="twitter:description" content="Las zonas con aviso del SENAMHI por departamento, provincia y distrito, la lluvia de las últimas horas y el pronóstico. No es un sitio oficial.">
+  <meta name="twitter:image" content="https://alerta.illapalabs.org/og.jpg">
+
+  <!-- Para buscadores: qué es el sitio y quién lo hace -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Perú Alerta Lluvia",
+    "url": "https://alerta.illapalabs.org/",
+    "description": "Mapa de las zonas del Perú con aviso de lluvias fuertes del SENAMHI, por departamento, provincia y distrito, con la lluvia de las últimas horas y el pronóstico. No es un sitio oficial.",
+    "inLanguage": "es-PE",
+    "applicationCategory": "WeatherApplication",
+    "operatingSystem": "Cualquiera (navegador web)",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "PEN" },
+    "areaServed": { "@type": "Country", "name": "Perú" },
+    "image": "https://alerta.illapalabs.org/og.jpg",
+    "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Illapa Labs",
+      "url": "https://github.com/Illapa-Labs",
+      "logo": "https://alerta.illapalabs.org/apple-touch-icon.png"
+    }
+  }
+  </script>
 </head>
 <body>
+  <!-- El título de la página para buscadores y lectores de pantalla (el panel muestra el lugar elegido) -->
+  <h1 class="visually-hidden">Perú Alerta Lluvia: zonas con aviso de lluvias fuertes del SENAMHI por departamento, provincia y distrito</h1>
+  <noscript>
+    <p class="noscript">Esta página necesita JavaScript para mostrar el mapa y los avisos de lluvias fuertes del SENAMHI. Puedes ver los avisos oficiales en <a href="https://www.senamhi.gob.pe">senamhi.gob.pe</a>.</p>
+  </noscript>
   <!-- El panel va primero: se ve en cuanto llega esta página, sin esperar al mapa -->
   <aside id="panel" aria-label="Aviso de lluvia del SENAMHI">
     <header class="panel-header">

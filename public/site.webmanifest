@@ -1,0 +1,14 @@
+{
+  "name": "Perú Alerta Lluvia",
+  "short_name": "Alerta Lluvia",
+  "description": "Avisos de lluvias fuertes del SENAMHI en el Perú, por departamento, provincia y distrito. No es un sitio oficial.",
+  "lang": "es-PE",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0B3A5C",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

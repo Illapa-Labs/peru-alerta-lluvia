@@ -23,3 +23,13 @@
 
 /data/distritos-formas.json
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# La imagen para compartir, el ícono y lo de buscadores casi no cambian
+/og.jpg
+  Cache-Control: public, max-age=86400
+
+/favicon.svg
+  Cache-Control: public, max-age=86400
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=86400
