@@ -243,9 +243,9 @@ async function main() {
   else map.once('load', showRain)
   mapApi.select(selected)
   // Sin vuelo y sin inclinar, para que entre todo el Perú (con el mapa inclinado se cortaba el sur)
-  // En el celular el mapa va arriba, con el buscador encima: se deja ese espacio (la lluvia ya no tapa el mapa)
+  // En el celular el mapa va arriba, con el buscador y la lluvia encima y la leyenda abajo: se deja ese espacio
   const narrow = window.matchMedia('(max-width: 800px)').matches
-  const padding = narrow ? { top: 56, bottom: 24, left: 12, right: 12 } : 40
+  const padding = narrow ? { top: 150, bottom: 44, left: 12, right: 12 } : 40
   if (pendingFit) mapApi.map.fitBounds(pendingFit, { padding, pitch: 0, bearing: 0, duration: 0 })
 
   // Con buena conexión las formas se bajan en cuanto el mapa está listo, para que el primer toque ya sea por provincia

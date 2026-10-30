@@ -62,13 +62,14 @@ a { color: var(--blue); }
 .rain-close:hover { background: #f3f6f8; }
 /* La escala de la lluvia (logarítmica, de 0,1 a 53 mm/h): los mismos colores que src/escala.ts */
 .rain-scale { height: 8px; border-radius: 4px; background: linear-gradient(90deg, rgb(160,214,250) 0%, rgb(90,170,240) 30%, rgb(40,110,225) 50%, rgb(40,50,180) 68%, rgb(100,30,170) 82%, rgb(160,20,150) 100%); }
-.rain-ticks { position: relative; height: 14px; font-size: 10px; color: #33404d; }
-.rain-ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
-.rain-ticks span:nth-child(1) { left: 0; transform: none; }
-.rain-ticks span:nth-child(2) { left: 37%; }
-.rain-ticks span:nth-child(3) { left: 63%; }
-.rain-ticks span:nth-child(4) { left: 85%; }
-.rain-ticks span:nth-child(5) { right: 0; transform: none; }
+/* La escala en palabras, con los cortes de lluvia por hora (escala logarítmica de 0,1 a 53 mm/h, ver src/escala.ts):
+   llovizna hasta 2 mm/h (48 %), moderada hasta 15 (80 %), fuerte desde ahí */
+.rain-ticks { position: relative; height: 15px; font-size: 11px; font-weight: 600; color: #33404d; }
+.rain-ticks span { position: absolute; top: 0; text-align: center; white-space: nowrap; }
+.rain-ticks span + span { border-left: 1px solid #9aa7b4; }
+.rain-ticks span:nth-child(1) { left: 0; width: 48%; }
+.rain-ticks span:nth-child(2) { left: 48%; width: 32%; }
+.rain-ticks span:nth-child(3) { left: 80%; width: 20%; }
 .rain-note { margin: 0; font-size: 11px; color: var(--muted); }
 
 /* La atribución de MapLibre */
@@ -149,23 +150,22 @@ a { color: var(--blue); }
 /* La leyenda y la lluvia van sueltas sobre el mapa (cada una con su posición); el contenedor no se ve */
 #dock { display: contents; }
 
-/* En una pantalla angosta: el mapa arriba, debajo una franja con la leyenda y la lluvia, y debajo el panel, que se
-   desplaza. Sobre el mapa solo quedan el buscador y la atribución, que así se ve entera desde el inicio. */
+/* En una pantalla angosta: el mapa arriba y el panel debajo, que se desplaza. Sobre el mapa flotan el buscador, la
+   lluvia (debajo del buscador, a todo el ancho) y la leyenda del aviso (abajo a la izquierda). */
 @media (max-width: 800px) {
   :root { --panel: 100vw; --map-height: 60dvh; }
   body { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
   #mapa { position: relative; inset: auto; order: 1; flex: 0 0 var(--map-height); }
-  #dock {
-    order: 2; display: flex; flex-direction: column; gap: 8px; padding: 8px 12px 10px;
-    background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--soft-line);
-  }
-  #dock .float { position: static; box-shadow: none; }
   #panel { position: relative; inset: auto; order: 3; flex: 1; min-height: 0; width: 100%; border-right: 0; }
+  #dock .float { box-shadow: 0 1px 6px rgba(23, 32, 42, 0.18); }
 
-  /* La leyenda en una sola línea: «Aviso de lluvia (24 h) ● Amarillo ● Naranja ● Rojo» */
-  #legend { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 0; border-radius: 0; }
-  #legend b { font-size: 11px; white-space: nowrap; }
-  #legend .bar { display: none; }
+  /* La leyenda, una pastilla de una línea: «Aviso ● 1 Amarillo ● 2 Naranja ● 3 Rojo» */
+  #legend {
+    left: 8px; right: auto; top: calc(var(--map-height) - 34px); bottom: auto;
+    flex-direction: row; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 999px;
+  }
+  #legend b { font-size: 11px; }
+  #legend .legend-long, #legend .bar { display: none; }
   #legend .names { display: flex; gap: 10px; width: auto; font-size: 11px; font-weight: 600; white-space: nowrap; }
   #legend .names span { display: inline-flex; align-items: center; gap: 5px; }
   #legend .names span::before { content: ''; width: 10px; height: 10px; border-radius: 50%; }
@@ -173,13 +173,17 @@ a { color: var(--blue); }
   #legend .names span:nth-child(2)::before { background: #EE7D2B; }
   #legend .names span:nth-child(3)::before { background: #C3262F; }
 
-  /* La lluvia, compacta: la barra con la hora y una escala fina de colores */
-  #lluvia { border-radius: 0; }
-  .rain-open { width: 100%; height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; font-size: 13px; }
-  .rain-controls { width: 100%; padding: 0; gap: 4px; }
-  .rain-play { width: 32px; height: 32px; font-size: 12px; }
+  /* La lluvia, compacta y debajo del buscador */
+  #lluvia { top: 56px; left: 8px; right: 8px; bottom: auto; border-radius: 12px; }
+  #lluvia:has(.rain-open:not([hidden])) { left: auto; }
+  .rain-open { height: 34px; padding: 0 12px; font-size: 12px; }
+  .rain-controls { width: 100%; padding: 6px 10px 4px; gap: 3px; }
+  .rain-row { gap: 8px; }
+  .rain-play { width: 28px; height: 28px; font-size: 11px; }
+  .rain-close { width: 24px; height: 24px; }
+  .between-row { font-size: 12px; }
   .rain-scale { height: 5px; }
-  .rain-ticks, .rain-note { display: none; }
+  .rain-note { display: none; }
 
   #search { top: 8px; right: 8px; width: min(220px, calc(100vw - 16px)); }
   #search input { height: 40px; }
@@ -256,17 +260,13 @@ a { color: var(--blue); }
 }
 
 /* Más apretado aún: en la lista de distritos basta el nombre y la provincia (el detalle de la zona está al abrir cada
-   uno), y la franja de la leyenda y la lluvia con menos aire */
+   uno) */
 @media (max-width: 800px) {
   .district-zone { display: none; }
   .districts { gap: 4px; }
   .districts li { padding: 3px 6px; margin: -3px -6px; }
   .district-text { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 6px; }
   .district-detail { font-size: 11px; }
-  #dock { gap: 4px; padding: 6px 12px 6px; }
-  .rain-open { height: 32px; }
-  .rain-play { width: 28px; height: 28px; }
-  .rain-controls { gap: 2px; }
 }
 
 /* En el celular lo primero que se ve del aviso es el nivel y qué hacer; la explicación va después. La etiqueta

@@ -56,6 +56,8 @@ const HOURS = 24
 /** Solo se piden mosaicos que tocan el Perú */
 const PERU: [number, number, number, number] = [-82, -19, -68, 1]
 const OPACITY = 0.85
+/** El pronóstico es del modelo global del UK Met Office, servido por Open-Meteo (ver illapa-engine, src/forecast.rs) */
+const FORECAST_CREDIT = 'UK Met Office vía Open-Meteo.com (CC BY-SA 4.0)'
 /** Al reproducir, cada hora de lluvia dura esto en pantalla */
 const HOUR_MS = 800
 
@@ -162,7 +164,7 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     slider.value = String(Math.round((now - first()) / 60_000))
     // La hora, a los 10 minutos
     label.textContent = hourFormat.format(new Date(Math.round(now / 600_000) * 600_000))
-    kind.textContent = frames[f > 0.5 ? i + 1 : i]!.forecast ? 'Pronóstico · mm/h · hora de Lima' : 'Ya cayó · mm/h · hora de Lima'
+    kind.textContent = frames[f > 0.5 ? i + 1 : i]!.forecast ? 'Pronóstico · hora de Lima' : 'Ya cayó · hora de Lima'
   }
 
   const tick = (stamp: number) => {
@@ -197,11 +199,13 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     frames = [...past, ...future.map(({ time, url, coordinates }) => ({ time, forecast: true, source: { type: 'image' as const, url, coordinates } }))]
     note.textContent = [
       'Lo que ya cayó: satélite de la NASA, con unas 6 horas de retraso.',
-      future.length ? 'Lo que viene: pronóstico de Open-Meteo.com (CC BY 4.0), unos 22 km, por hora.' : '',
+      future.length ? `Lo que viene: ${FORECAST_CREDIT}, unos 22 km, por hora.` : '',
     ].join(' ')
-    const attribution = 'Lluvia: NASA GPM IMERG (GIBS)'
+    // El crédito va en la atribución del mapa (en el celular la nota no se ve). El del pronóstico va con el de la NASA:
+    // una fuente de imagen no lleva atribución.
+    const attribution = ['Lluvia: NASA GPM IMERG (GIBS)', future.length ? `Pronóstico: ${FORECAST_CREDIT}` : ''].filter(Boolean).join(' · ')
     frames.forEach((frame, i) => {
-      // Los mosaicos de la NASA van en una capa cada uno (el crédito de Open-Meteo va en la nota)
+      // Los mosaicos de la NASA van en una capa cada uno
       if (frame.source.type !== 'raster') return
       map.addSource(layerId(i), { ...frame.source, ...(i === 0 ? { attribution } : {}) })
       // Debajo del aviso (que tiene prioridad), encima del relieve. Todas a la vez (invisibles) para que ya estén bajadas.
