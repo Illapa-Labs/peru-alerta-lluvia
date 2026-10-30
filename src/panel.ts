@@ -526,9 +526,13 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
         hint = 'Toca tu provincia o tu distrito en el mapa.'
       }
     }
-    const badge = text(level ? String(level.n) : '–', 'peek-badge')
+    // Sin número: el nivel no le dice nada a nadie; el color y la palabra de al lado sí
+    const badge = text(level ? '!' : '–', 'peek-badge')
     badge.style.background = level?.strong ?? '#9aa7b4'
-    const status = text(!level ? (shown ? 'Sin aviso de lluvia hoy' : 'Cargando el aviso…') : chosen ? `${level.name} · ${level.rain}` : `${level.name} en parte de ${place}`, 'peek-level')
+    // «Aviso rojo · Lluvia muy fuerte», y los milímetros aparte, en chico, para que no se partan
+    const [rainWords, rainAmount] = level ? level.rain.split(' · ') : []
+    const status = el('span', 'peek-level', !level ? (shown ? 'Sin aviso de lluvia hoy' : 'Cargando el aviso…') : chosen ? `${level.name} · ${rainWords} ` : `${level.name} en parte de ${place}`)
+    if (level && chosen && rainAmount) status.append(text(rainAmount, 'peek-amount'))
     if (level) status.style.color = level.ink
     const todo = level ? el('span', 'peek-todo', el('b', '', 'Qué hacer: '), level.hereTodo) : ''
     peek.replaceChildren(

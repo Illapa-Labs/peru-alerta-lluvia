@@ -178,16 +178,18 @@ a { color: var(--blue); }
   .peek-where { font-size: 12px; color: var(--muted); }
   .peek-more { flex: none; font-size: 12px; font-weight: 700; color: var(--blue); }
   .peek-level { font-size: 13px; font-weight: 700; }
+  .peek-amount { font-size: 12px; font-weight: 400; white-space: nowrap; }
   /* Abierta, el nombre del lugar ya está en la cabecera de la hoja */
   #panel .place-name { display: none; }
   .peek-todo { font-size: 13px; line-height: 1.4; color: var(--text); }
   .peek-hint { font-size: 12px; color: var(--muted); }
 
-  /* La atribución («i») sube para no quedar debajo de la hoja */
-  #mapa .maplibregl-ctrl-bottom-right, #mapa .maplibregl-ctrl-bottom-left { bottom: var(--sheet); }
+  /* La atribución («i») va debajo del buscador */
+  #mapa .maplibregl-ctrl-top-right { top: 46px; }
   #dock .float { box-shadow: 0 1px 6px rgba(23, 32, 42, 0.18); }
 
-  /* La leyenda, chica, arriba a la izquierda del buscador: «Aviso» y los tres niveles uno debajo del otro */
+  /* La leyenda, chica, arriba a la izquierda del buscador: «Aviso de lluvia» y lo que dice cada color, uno debajo del
+     otro (el color solo no basta, y el número del nivel no le dice nada a nadie) */
   #legend { left: 8px; right: auto; top: 8px; bottom: auto; gap: 3px; padding: 6px 10px; border-radius: 10px; }
   #legend b { font-size: 11px; }
   #legend .legend-long, #legend .bar { display: none; }
@@ -198,8 +200,8 @@ a { color: var(--blue); }
   #legend .names span:nth-child(2)::before { background: #EE7D2B; }
   #legend .names span:nth-child(3)::before { background: #C3262F; }
 
-  /* La lluvia, compacta, encima de la hoja (a su derecha queda el botón «i» de la atribución) */
-  #lluvia { top: auto; left: 8px; right: 44px; bottom: calc(var(--sheet) + 8px); border-radius: 12px; }
+  /* La lluvia, compacta, encima de la hoja y a todo el ancho */
+  #lluvia { top: auto; left: 8px; right: 8px; bottom: calc(var(--sheet) + 8px); border-radius: 12px; }
   #lluvia:has(.rain-open:not([hidden])) { left: auto; }
   .rain-open { height: 34px; padding: 0 12px; font-size: 12px; }
   .rain-controls { width: 100%; padding: 6px 10px 4px; gap: 3px; }
