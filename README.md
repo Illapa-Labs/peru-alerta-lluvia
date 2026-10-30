@@ -16,7 +16,7 @@
 
 Mapa de las zonas del Perú con aviso de lluvias fuertes, con la información del SENAMHI. Muestra el aviso por departamento, provincia y distrito, cuánta gente vive en las zonas con aviso de activación de quebradas, la lluvia de las últimas horas y el pronóstico.
 
-> **No es un sitio oficial.** La fuente de los avisos es el [SENAMHI](https://www.senamhi.gob.pe). Ante una emergencia llama al 115 (INDECI) o al 116 (Bomberos).
+> **No es un sitio oficial.** La fuente de los avisos es el [SENAMHI](https://www.gob.pe/senamhi) ([aviso de lluvias intensas a 24 horas](https://observatorio.senamhi.gob.pe/gestion-riesgo-desastres/aviso-lluvias-intensas-24h/)). Ante una emergencia llama al 115 (INDECI) o al 116 (Bomberos).
 
 ![El Perú con las zonas del aviso de lluvia del SENAMHI y la lluvia de las últimas horas sobre el mapa con relieve](docs/capturas/inicio.jpg)
 
