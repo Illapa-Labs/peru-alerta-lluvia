@@ -15,7 +15,7 @@ This project does not own this data and does not guarantee it.
 | Forecast | [UK Met Office](https://www.metoffice.gov.uk) global 10 km model, via [Open-Meteo](https://open-meteo.com) | Met Office data: CC BY-SA 4.0 (Crown copyright). Open-Meteo's free API is for non-commercial use only | Attribution required, and anything derived from it (the API's forecast and its images) is shared under the same CC BY-SA 4.0 licence. The current use (no ads, no subscriptions) meets the non-commercial condition |
 | Department outlines | Natural Earth | Public domain | No attribution required |
 | Base map (streets) | OpenFreeMap, with OpenStreetMap and OpenMapTiles data | Its terms give no clear license and ask for no attribution, and the service may be discontinued | Attribution is shown on the map. **Pending:** verify the data license and plan to host our own tiles |
-| Terrain | Mapzen / AWS Terrain Tiles | Attribution is in a document of the Joerd project that was not read | "Mapzen / AWS Terrain Tiles" is shown on the map. **Pending** |
+| Terrain | Mapzen / AWS Terrain Tiles | Attribution is in a document of the Joerd project that was not read | **Not used today:** the map is flat. It would come back with an on-demand 3D view, and its attribution must be settled then |
 
 ## Software dependencies
 

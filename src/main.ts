@@ -241,7 +241,7 @@ async function main() {
         syncUrl(true)
       }
     },
-  })
+  }, pendingFit)
   document.body.classList.add('map-ready')
   // La lluvia hora por hora: el botón aparece con el mapa, y no baja nada hasta que se toca
   const { setupRain } = await import('./lluvia')
@@ -266,7 +266,7 @@ async function main() {
     new ResizeObserver(follow).observe(peek)
     follow()
   }
-  // Sin vuelo y sin inclinar, para que entre todo el Perú (con el mapa inclinado se cortaba el sur)
+  // El mapa ya empieza en lo que se pidió encuadrar; si mientras cargaba se pidió otro lugar, se va ahí sin vuelo
   if (pendingFit) mapApi.map.fitBounds(pendingFit, { padding: viewPadding(), pitch: 0, bearing: 0, duration: 0 })
 
   // Con buena conexión las formas se bajan en cuanto el mapa está listo, para que el primer toque ya sea por provincia

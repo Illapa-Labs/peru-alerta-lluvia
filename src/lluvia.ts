@@ -113,7 +113,9 @@ export function setupRain(map: GlMap, peru: Ring[]) {
   // las impares, a las que se les cambia la imagen (todas tienen el mismo tamaño y lugar); así el fundido entre una y
   // la siguiente usa siempre las dos. Mientras se ve la lluvia el relieve 3D se apaga: el mapa en 3D guarda lo
   // dibujado y no se enteraba del cambio de imagen.
-  // Los mosaicos de la NASA sí van en una capa cada uno: son chicos.
+  // Los mosaicos de la NASA sí van en una capa cada uno: son chicos. Al abrir solo se agrega la de ahora (lo único que se
+  // ve); las otras 23 se agregan al tocar el «play» o la barra. Agregarlas todas al abrir bajaba unos 200 mosaicos, y
+  // cada uno se vuelve a pintar en el teléfono.
   const SLOTS = ['lluvia-par', 'lluvia-impar']
   const slotImage = new Map<string, number>()
   const layerId = (i: number) => `lluvia-${i}`
@@ -126,10 +128,23 @@ export function setupRain(map: GlMap, peru: Ring[]) {
   let terrain: ReturnType<GlMap['getTerrain']> = null
   const urlOf = (source: { url: string | (() => string) }) => (typeof source.url === 'string' ? source.url : source.url())
   let warmed = false
-  /** La primera vez que se toca el «play» o la barra: se bajan todas las imágenes y se apaga el relieve 3D */
+  /** La capa de un mosaico de la NASA (una sola vez): debajo del aviso, que tiene prioridad. Empieza invisible. */
+  let attribution = ''
+  let credited = false
+  const addRasterLayer = (i: number) => {
+    const frame = frames[i]!
+    if (frame.source.type !== 'raster' || map.getLayer(layerId(i))) return
+    // El crédito va en la primera capa que se agrega: así está siempre que se ve la lluvia
+    map.addSource(layerId(i), { ...frame.source, ...(credited ? {} : { attribution }) })
+    credited = true
+    map.addLayer({ id: layerId(i), type: 'raster', source: layerId(i), paint: { 'raster-opacity': 0, 'raster-fade-duration': 0 } }, 'aviso-relleno')
+  }
+  /** La primera vez que se toca el «play» o la barra: se agregan las demás horas, se bajan las imágenes y se apaga el
+   * relieve 3D */
   const warm = () => {
     if (warmed) return
     warmed = true
+    frames.forEach((_, i) => addRasterLayer(i))
     for (const frame of frames) if (frame.source.type === 'image' && typeof frame.source.url === 'string') new Image().src = frame.source.url
     terrain = map.getTerrain()
     if (terrain) map.setTerrain(null)
@@ -202,14 +217,8 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     // El crédito va en la atribución del mapa (en el celular la nota no se ve). El del pronóstico va con el de la NASA:
     // una fuente de imagen no lleva atribución.
     const forecast = forecastCredit()
-    const attribution = ['Lluvia: NASA GPM IMERG (GIBS)', future.length ? forecast[0]!.toUpperCase() + forecast.slice(1) : ''].filter(Boolean).join(' · ')
-    frames.forEach((frame, i) => {
-      // Los mosaicos de la NASA van en una capa cada uno
-      if (frame.source.type !== 'raster') return
-      map.addSource(layerId(i), { ...frame.source, ...(i === 0 ? { attribution } : {}) })
-      // Debajo del aviso (que tiene prioridad), encima del relieve. Todas a la vez (invisibles) para que ya estén bajadas.
-      map.addLayer({ id: layerId(i), type: 'raster', source: layerId(i), paint: { 'raster-opacity': 0, 'raster-fade-duration': 0 } }, 'aviso-relleno')
-    })
+    attribution = ['Lluvia: NASA GPM IMERG (GIBS)', future.length ? forecast[0]!.toUpperCase() + forecast.slice(1) : ''].filter(Boolean).join(' · ')
+    addRasterLayer(past.length - 1)
     // Empieza en ahora: hacia atrás, lo que cayó; hacia adelante, el pronóstico. Las dos capas de imagen hacen falta
     // en cuanto haya alguna imagen (aunque ahora se vea un mosaico de la NASA): empiezan con la imagen de ahora si lo
     // es, o con la primera del pronóstico, que es la única que se dibuja hasta que se toque algo.
@@ -243,6 +252,7 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     if (terrain) map.setTerrain(terrain)
     terrain = null
     warmed = false
+    credited = false
     slotImage.clear()
     frames = []
     visible = new Map()
