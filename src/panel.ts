@@ -146,7 +146,11 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     row.tabIndex = 0
     row.setAttribute('role', 'button')
     if (chosen?.shape.ubigeo === ubigeo) row.classList.add('chosen')
-    const choose = () => ubigeo && handlers.selectDistrict(ubigeo)
+    const choose = () => {
+      if (!ubigeo) return
+      setOpen(false)
+      handlers.selectDistrict(ubigeo)
+    }
     row.addEventListener('click', choose)
     row.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -484,7 +488,60 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     'Medimos visitas y velocidad de carga de forma anónima, sin cookies ni datos personales.',
   )
 
+  // ---- En el celular, el panel es una hoja al pie del mapa ----
+  // Cerrada muestra solo lo que importa: el lugar, su aviso y qué hacer. Con un toque se abre con todo el detalle.
+  const peek = el('button', 'peek')
+  peek.type = 'button'
+  const setOpen = (open: boolean) => {
+    root.classList.toggle('sheet-open', open)
+    peek.setAttribute('aria-expanded', String(open))
+    peek.querySelector('.peek-more')?.replaceChildren(open ? 'Cerrar ▾' : 'Ver más ▴')
+    if (!open) root.scrollTop = 0
+  }
+  peek.addEventListener('click', () => setOpen(!root.classList.contains('sheet-open')))
+
+  function renderPeek() {
+    let place = 'Perú'
+    let where = ''
+    let level: Level | undefined
+    let hint = ''
+    if (shown) {
+      const home = withDistricts(shown.home, data.districts)
+      if (chosen) {
+        place = titleCase(chosen.shape.name)
+        where = `${titleCase(chosen.province)}, ${home.name}`
+        const info = data.districts.find((district) => district.ubigeo === chosen!.shape.ubigeo)
+        level = info ? LEVELS[info.nivel - 2] : undefined
+      } else if (province) {
+        place = titleCase(province.name)
+        where = `Provincia de ${home.name}`
+        const levels = new Map(data.districts.map((district) => [district.ubigeo, district.nivel]))
+        const top = province.distritos.reduce((top, shape) => Math.max(top, (levels.get(shape.ubigeo) ?? 1) - 2), -1)
+        level = LEVELS[top]
+        hint = 'Toca tu distrito en el mapa para ver su aviso.'
+      } else {
+        place = home.name
+        where = 'Departamento'
+        level = home.highest !== undefined ? LEVELS[home.highest] : undefined
+        hint = 'Toca tu provincia o tu distrito en el mapa.'
+      }
+    }
+    const badge = text(level ? String(level.n) : '–', 'peek-badge')
+    badge.style.background = level?.strong ?? '#9aa7b4'
+    const status = text(!level ? (shown ? 'Sin aviso de lluvia hoy' : 'Cargando el aviso…') : chosen ? `${level.name} · ${level.rain}` : `${level.name} en parte de ${place}`, 'peek-level')
+    if (level) status.style.color = level.ink
+    const todo = level ? el('span', 'peek-todo', el('b', '', 'Qué hacer: '), level.hereTodo) : ''
+    peek.replaceChildren(
+      el('span', 'peek-handle'),
+      el('span', 'peek-row', badge, el('span', 'peek-text', text(place, 'peek-place'), where ? text(where, 'peek-where') : ''), text(root.classList.contains('sheet-open') ? 'Cerrar ▾' : 'Ver más ▴', 'peek-more')),
+      status,
+      todo,
+      hint ? text(hint, 'peek-hint') : '',
+    )
+  }
+
   function update() {
+    renderPeek()
     renderPlace()
     renderNear()
     renderExposure()
@@ -492,7 +549,8 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     renderOfficial()
   }
 
-  root.replaceChildren(header, el('section', 'block', placeBody), folds, footer)
+  root.replaceChildren(peek, header, el('section', 'block', placeBody), folds, footer)
+  setOpen(false)
   update()
 
   const homeOf = (department: Department, steps: number) => sharedHomeOf(department, areas, steps)
@@ -511,6 +569,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     showProvince(focus) {
       province = focus
       showAllDistricts = false
+      setOpen(false)
       update()
     },
     showDistrict(shape, shapes) {
@@ -519,6 +578,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
       } else {
         chosen = { shape, province: shapes.provinces[shape.ubigeo.slice(0, 4)] ?? '' }
       }
+      setOpen(false)
       update()
     },
     current: () => shown?.home.name,

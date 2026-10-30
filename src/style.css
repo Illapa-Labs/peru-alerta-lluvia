@@ -151,13 +151,40 @@ a { color: var(--blue); }
 /* La leyenda y la lluvia van sueltas sobre el mapa (cada una con su posición); el contenedor no se ve */
 #dock { display: contents; }
 
-/* En una pantalla angosta: el mapa arriba y el panel debajo, que se desplaza. Sobre el mapa flotan el buscador y la
-   leyenda del aviso (arriba) y la lluvia (abajo, a todo el ancho, donde llega el pulgar). */
+/* La hoja de abajo solo existe en el celular */
+.peek { display: none; }
+
+/* En una pantalla angosta el mapa ocupa toda la pantalla. El panel es una hoja al pie: cerrada muestra el lugar, su
+   aviso y qué hacer (--sheet es su alto, lo pone main.ts); abierta, todo el detalle. Sobre el mapa flotan el buscador
+   y la leyenda (arriba) y la lluvia (abajo, encima de la hoja, donde llega el pulgar). */
 @media (max-width: 800px) {
-  :root { --panel: 100vw; --map-height: 60dvh; }
-  body { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
-  #mapa { position: relative; inset: auto; order: 1; flex: 0 0 var(--map-height); }
-  #panel { position: relative; inset: auto; order: 3; flex: 1; min-height: 0; width: 100%; border-right: 0; }
+  :root { --panel: 100vw; --sheet: 150px; }
+  #mapa { left: 0; }
+  #panel {
+    top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-height: 85dvh; z-index: 4;
+    border-right: 0; border-radius: 16px 16px 0 0; box-shadow: 0 -4px 16px rgba(23, 32, 42, 0.16); overflow: hidden;
+  }
+  #panel.sheet-open { height: 85dvh; overflow-y: auto; }
+  #panel:not(.sheet-open) > :not(.peek) { display: none; }
+  .peek {
+    position: sticky; top: 0; z-index: 1; display: flex; flex-direction: column; gap: 4px; width: 100%;
+    padding: 6px 14px 12px; border: 0; border-bottom: 1px solid var(--soft-line); background: #fff; text-align: left; cursor: pointer;
+  }
+  .peek-handle { align-self: center; width: 36px; height: 4px; margin-bottom: 4px; border-radius: 2px; background: #c3ccd5; }
+  .peek-row { display: flex; align-items: center; gap: 10px; }
+  .peek-badge { flex: none; width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; font-weight: 800; }
+  .peek-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .peek-place { font-size: 18px; font-weight: 800; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .peek-where { font-size: 12px; color: var(--muted); }
+  .peek-more { flex: none; font-size: 12px; font-weight: 700; color: var(--blue); }
+  .peek-level { font-size: 13px; font-weight: 700; }
+  /* Abierta, el nombre del lugar ya está en la cabecera de la hoja */
+  #panel .place-name { display: none; }
+  .peek-todo { font-size: 13px; line-height: 1.4; color: var(--text); }
+  .peek-hint { font-size: 12px; color: var(--muted); }
+
+  /* La atribución («i») sube para no quedar debajo de la hoja */
+  #mapa .maplibregl-ctrl-bottom-right, #mapa .maplibregl-ctrl-bottom-left { bottom: var(--sheet); }
   #dock .float { box-shadow: 0 1px 6px rgba(23, 32, 42, 0.18); }
 
   /* La leyenda, chica, arriba a la izquierda del buscador: «Aviso» y los tres niveles uno debajo del otro */
@@ -171,8 +198,8 @@ a { color: var(--blue); }
   #legend .names span:nth-child(2)::before { background: #EE7D2B; }
   #legend .names span:nth-child(3)::before { background: #C3262F; }
 
-  /* La lluvia, compacta, al pie del mapa (encima del botón «i» de la atribución) */
-  #lluvia { top: auto; left: 8px; right: 8px; bottom: calc(100dvh - var(--map-height) + 40px); border-radius: 12px; }
+  /* La lluvia, compacta, encima de la hoja (a su derecha queda el botón «i» de la atribución) */
+  #lluvia { top: auto; left: 8px; right: 44px; bottom: calc(var(--sheet) + 8px); border-radius: 12px; }
   #lluvia:has(.rain-open:not([hidden])) { left: auto; }
   .rain-open { height: 34px; padding: 0 12px; font-size: 12px; }
   .rain-controls { width: 100%; padding: 6px 10px 4px; gap: 3px; }
