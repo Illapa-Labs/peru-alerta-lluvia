@@ -1,0 +1,12 @@
+{
+  // El sitio en Cloudflare como archivos estáticos (la carpeta dist que deja `bun run build`), sin código en el
+  // servidor: los datos los da la API de Illapa. Publicar: bun run build && npx wrangler deploy
+  "name": "illapa-alerta-lluvia",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist"
+  },
+  // La dirección pública. Cloudflare crea el registro DNS y el certificado al desplegar.
+  "routes": [{ "pattern": "alerta.illapalabs.org", "custom_domain": true }],
+  "workers_dev": true
+}
