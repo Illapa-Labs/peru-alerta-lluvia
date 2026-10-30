@@ -1,0 +1,192 @@
+/* El diseño "Escritorio · panel de aviso": un panel blanco a la izquierda y el mapa con pocos controles. */
+:root {
+  --text: #17202a;
+  --muted: #4a5866;
+  --line: #d5dce3;
+  --soft-line: #e6ebf0;
+  --blue: #1f5fa8;
+  --panel: 440px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text);
+  background: #e9eef2;
+}
+button { font: inherit; color: inherit; }
+a { color: var(--blue); }
+
+#panel {
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 2;
+  width: min(var(--panel), 45vw); background: #fff; border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain;
+}
+/* El mapa ocupa solo lo que el panel no tapa: así lo que se ve es todo el mapa */
+#mapa { position: fixed; top: 0; bottom: 0; right: 0; left: min(var(--panel), 45vw); }
+.map-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; color: var(--muted); font-size: 14px; }
+.map-ready .map-loading { display: none; }
+
+.float { position: fixed; z-index: 1; background: #fff; box-shadow: 0 2px 10px rgba(23, 32, 42, 0.12); }
+#search { z-index: 3; top: 20px; right: 20px; width: min(300px, calc(100vw - 40px)); border-radius: 12px; }
+#search .search-icon { position: absolute; left: 14px; top: 13px; pointer-events: none; }
+#search input { width: 100%; height: 44px; padding: 0 14px 0 40px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-size: 14px; color: var(--text); outline: none; }
+#search input:focus-visible { box-shadow: 0 0 0 2px var(--blue); }
+#search ul { list-style: none; margin: 0; padding: 4px; border-top: 1px solid var(--soft-line); max-height: min(60vh, 420px); overflow-y: auto; }
+#search li { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+#search li[aria-selected='true'], #search li:hover { background: #f3f6f8; }
+#search li.empty { color: var(--muted); cursor: default; }
+#search .option-name { font-weight: 600; }
+#search .option-level { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+#legend { left: calc(min(var(--panel), 45vw) + 20px); bottom: 36px; padding: 12px 14px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+#legend b { font-size: 12px; color: #33404d; }
+#legend .bar { display: flex; }
+#legend .bar span { width: 75px; height: 10px; }
+#legend .bar span:first-child { border-radius: 5px 0 0 5px; }
+#legend .bar span:last-child { border-radius: 0 5px 5px 0; }
+#legend .names { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 225px; font-size: 11px; color: #33404d; text-align: center; }
+
+/* La lluvia hora por hora (abajo a la derecha del mapa) */
+#lluvia { right: 20px; bottom: 36px; border-radius: 12px; }
+.rain-open { height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: #fff; font-size: 13px; font-weight: 700; cursor: pointer; }
+.rain-open:disabled { cursor: progress; color: var(--muted); }
+.rain-controls { width: min(360px, calc(100vw - 40px)); padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 6px; }
+.rain-row { display: flex; align-items: center; gap: 10px; }
+.between-row { justify-content: space-between; font-size: 12px; }
+.rain-row input[type='range'] { flex: 1; accent-color: var(--blue); }
+.rain-play { flex: none; width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--text); color: #fff; font-size: 13px; cursor: pointer; }
+.rain-close { flex: none; width: 28px; height: 28px; border: 0; border-radius: 8px; background: none; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; }
+.rain-close:hover { background: #f3f6f8; }
+/* La escala de la lluvia (logarítmica, de 0,1 a 53 mm/h): los mismos colores que src/escala.ts */
+.rain-scale { height: 8px; border-radius: 4px; background: linear-gradient(90deg, rgb(160,214,250) 0%, rgb(90,170,240) 30%, rgb(40,110,225) 50%, rgb(40,50,180) 68%, rgb(100,30,170) 82%, rgb(160,20,150) 100%); }
+.rain-ticks { position: relative; height: 14px; font-size: 10px; color: #33404d; }
+.rain-ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.rain-ticks span:nth-child(1) { left: 0; transform: none; }
+.rain-ticks span:nth-child(2) { left: 37%; }
+.rain-ticks span:nth-child(3) { left: 63%; }
+.rain-ticks span:nth-child(4) { left: 85%; }
+.rain-ticks span:nth-child(5) { right: 0; transform: none; }
+.rain-note { margin: 0; font-size: 11px; color: var(--muted); }
+
+/* La atribución de MapLibre */
+.maplibregl-ctrl-attrib { font-size: 11px; }
+
+/* ---- El panel ---- */
+.panel-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--soft-line); display: flex; flex-direction: column; gap: 4px; }
+.kicker { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.subtitle { margin: 0; font-size: 13px; color: var(--muted); }
+.icon { display: inline-flex; flex: none; }
+
+.block { padding: 20px 24px 8px; display: flex; flex-direction: column; gap: 12px; }
+.block.tight { padding-top: 8px; }
+.block h2 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+
+.place { display: flex; flex-direction: column; gap: 12px; }
+.place-name { display: flex; flex-direction: column; gap: 2px; }
+.place-title { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: 0; text-transform: none; color: var(--text); }
+.block h2.place-title { font-size: 26px; letter-spacing: 0; text-transform: none; color: var(--text); }
+.sub { margin: 4px 0 0; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.near { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.near li { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.near-name { font-weight: 600; }
+.near-level { margin-left: auto; color: var(--muted); }
+
+.card { border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.card.dashed { border-style: dashed; }
+.card-title { font-size: 18px; font-weight: 800; }
+.body { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text); }
+.lead { margin: 0; font-size: 15px; line-height: 1.5; }
+.row { margin: 0; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.muted { color: var(--muted); }
+.small { margin: 0; font-size: 12px; }
+.label { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.label.small { font-size: 11px; }
+.between { display: flex; justify-content: space-between; font-size: 11px; }
+
+.level-header { display: flex; align-items: center; gap: 14px; }
+.badge { flex: none; width: 56px; height: 56px; border-radius: 14px; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
+.badge-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; }
+.badge-number { font-size: 26px; font-weight: 800; }
+.level-text { display: flex; flex-direction: column; gap: 2px; }
+.level-name { font-size: 22px; font-weight: 800; }
+.level-rain { font-size: 14px; }
+.todo { display: flex; flex-direction: column; gap: 2px; padding: 12px; border-radius: 10px; background: #fff; }
+.swatch { flex: none; width: 14px; height: 14px; border-radius: 4px; }
+
+.alert { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 12px; background: #f3f6f8; border: 1px solid var(--line); color: var(--text); }
+.alert p { margin: 0 0 8px; font-size: 14px; line-height: 1.45; }
+.alert-text { display: flex; flex-direction: column; }
+.danger { align-self: flex-start; height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: var(--text); color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+.levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.level-button { min-height: 76px; padding: 0 0 8px; border: 2px solid var(--line); border-radius: 10px; background: #fff; display: flex; flex-direction: column; align-items: stretch; gap: 6px; cursor: pointer; overflow: hidden; text-align: left; }
+.level-button[aria-pressed='true'] { border-color: var(--text); }
+.level-button .bar { height: 8px; }
+.level-number { padding: 0 8px; display: flex; align-items: baseline; gap: 4px; font-size: 20px; font-weight: 800; }
+.mine { font-size: 10px; font-weight: 700; color: var(--blue); }
+.level-short { padding: 0 8px; font-size: 12px; line-height: 1.25; font-weight: 600; color: #33404d; }
+.level-title { display: flex; align-items: center; gap: 10px; }
+.level-title .card-title { font-size: 16px; }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.stat { display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 8px; background: #f3f6f8; }
+.stat-value { font-size: 14px; font-weight: 600; }
+
+.folds { padding-top: 12px; gap: 8px; }
+.fold { min-height: 48px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; font-weight: 700; text-align: left; cursor: pointer; }
+.sign { font-size: 18px; color: var(--muted); }
+.what, .official { padding: 4px 14px 8px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; line-height: 1.55; color: #33404d; }
+.what p, .official p { margin: 0; }
+.what .note { padding: 10px 12px; border-radius: 8px; background: #eaf2fb; color: #17324f; }
+.official { font-size: 13px; }
+.quote { font-style: italic; }
+
+.panel-footer { margin-top: auto; padding: 16px 24px 20px; border-top: 1px solid var(--soft-line); font-size: 12px; line-height: 1.5; color: var(--muted); }
+.panel-footer .warning { margin: 0 0 8px; color: #8e1c24; }
+
+/* En una pantalla angosta el panel va debajo del mapa */
+@media (max-width: 800px) {
+  :root { --panel: 100vw; }
+  #panel { top: 50%; width: 100%; border-right: 0; border-top: 1px solid var(--line); }
+  #mapa { left: 0; bottom: 50%; }
+  .map-loading { top: 50%; }
+  #legend { left: 8px; bottom: calc(50% + 44px); padding: 8px 10px; gap: 5px; }
+  #legend b { font-size: 11px; }
+  #legend .bar span { width: 50px; height: 8px; }
+  #legend .names { width: 150px; font-size: 10px; }
+  #search { top: 8px; right: 8px; width: min(280px, calc(100vw - 16px)); }
+  #lluvia { right: 8px; bottom: calc(50% + 44px); }
+  .rain-open { height: 36px; padding: 0 10px; font-size: 12px; }
+  .rain-controls { width: calc(100vw - 16px); padding: 8px 10px; gap: 4px; }
+  .rain-note { display: none; }
+  }
+
+/* El atributo hidden tiene que ganarle a cualquier display que se ponga */
+[hidden] { display: none !important; }
+
+.districts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.districts li { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; }
+.districts .swatch { margin-top: 4px; }
+.district-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.district-name { font-weight: 600; }
+.district-detail { font-size: 12px; color: var(--muted); }
+.districts .near-level { margin-left: auto; white-space: nowrap; padding-left: 8px; }
+.more { align-self: flex-start; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+.exposure { padding: 12px 14px; border-radius: 10px; background: #f3f6f8; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.45; }
+.exposure p { margin: 0; }
+
+.districts li { cursor: pointer; border-radius: 8px; margin: -4px -6px; padding: 4px 6px; }
+.districts li:hover, .districts li:focus-visible { background: #f3f6f8; outline: none; }
+.districts li.chosen { background: #eaf2fb; }
+.district-title { margin: 0; font-size: 22px; font-weight: 800; }
+.link { align-self: flex-start; padding: 0; border: 0; background: none; color: var(--blue); font-size: 13px; font-weight: 600; text-decoration: underline; cursor: pointer; }
+
+/* El hilo de migas */
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 13px; }
+.crumb { padding: 2px 4px; margin: 0 -4px; border: 0; border-radius: 6px; background: none; color: var(--blue); font-weight: 600; cursor: pointer; }
+.crumb:hover { background: #eaf2fb; }
+.crumb.here { font-weight: 700; color: var(--text); }
+.crumb-separator { color: var(--muted); }
+.place-title { margin-top: 2px; }

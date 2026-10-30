@@ -1,0 +1,21 @@
+name: Comprobar que el sitio se construye
+
+# Comprueba que el código pasa la revisión de tipos y que el sitio se construye. Los datos no se bajan aquí:
+# los sirve la API de Illapa (https://github.com/Illapa-Labs/illapa-engine).
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx tsc --noEmit
+      - run: bun run build

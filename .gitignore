@@ -6,6 +6,9 @@ coverage
 logs
 .env
 .env.*
+# Solo dicen dónde está la API, no tienen secretos
+!.env.development
+!.env.production
 .cache
 *.tsbuildinfo
 .idea
