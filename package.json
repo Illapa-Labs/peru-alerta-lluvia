@@ -1,0 +1,20 @@
+{
+  "name": "peru-alerta-lluvia",
+  "description": "Mapa de las zonas del Perú con aviso de lluvias fuertes, con la información del SENAMHI",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  },
+  "dependencies": {
+    "maplibre-gl": "^6.15.0"
+  }
+}

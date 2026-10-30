@@ -1,0 +1,25 @@
+# Cabeceras de Cloudflare Pages (https://developers.cloudflare.com/pages/configuration/headers/).
+# Lo que no cambia se guarda por un año; lo que cambia, minutos; y la página siempre se revisa.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/
+  Cache-Control: no-cache
+
+/index.html
+  Cache-Control: no-cache
+
+# Los archivos de /assets llevan su huella en el nombre: si cambian, cambia el nombre
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# El aviso, los distritos y el pronóstico vienen de la API de Illapa, que pone sus propias cabeceras.
+
+# Casi no cambian: los límites de los departamentos y las formas de los distritos
+/data/peru-departamentos.geojson
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/data/distritos-formas.json
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
