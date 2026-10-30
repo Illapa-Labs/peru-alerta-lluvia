@@ -73,25 +73,28 @@
     <input id="search-input" type="text" role="combobox" aria-label="Buscar departamento" aria-expanded="false" aria-controls="search-list" aria-autocomplete="list" placeholder="Buscar departamento" autocomplete="off" spellcheck="false">
     <ul id="search-list" role="listbox" aria-label="Departamentos" hidden></ul>
   </div>
-  <div id="legend" class="float">
-    <b>Aviso de lluvia (24 h)</b>
-    <div class="bar"><span style="background:#F4C430"></span><span style="background:#EE7D2B"></span><span style="background:#C3262F"></span></div>
-    <div class="names"><span>1 Amarillo</span><span>2 Naranja</span><span>3 Rojo</span></div>
-  </div>
-  <section id="lluvia" class="float" aria-label="Lluvia hora por hora">
-    <button id="lluvia-abrir" class="rain-open" hidden>▶ Lluvia: últimas 24 h y próximas 24 h</button>
-    <div id="lluvia-controles" class="rain-controls" hidden>
-      <div class="rain-row">
-        <button id="lluvia-play" class="rain-play" aria-label="Reproducir">▶</button>
-        <input id="lluvia-hora" type="range" min="0" max="23" step="1" value="23" aria-label="Hora">
-        <button id="lluvia-cerrar" class="rain-close" aria-label="Cerrar la lluvia">×</button>
-      </div>
-      <div class="rain-row between-row"><b id="lluvia-etiqueta">…</b><span id="lluvia-fuente" class="muted">hora de Lima</span></div>
-      <div class="rain-scale" aria-hidden="true"></div>
-      <div class="rain-ticks"><span>0,1</span><span>1</span><span>5</span><span>20</span><span>50</span></div>
-      <p id="lluvia-nota" class="rain-note"></p>
+  <!-- La leyenda y la lluvia: en escritorio flotan sobre el mapa; en el celular van en una franja entre el mapa y el panel -->
+  <div id="dock">
+    <div id="legend" class="float">
+      <b>Aviso de lluvia (24 h)</b>
+      <div class="bar"><span style="background:#F4C430"></span><span style="background:#EE7D2B"></span><span style="background:#C3262F"></span></div>
+      <div class="names"><span>1 Amarillo</span><span>2 Naranja</span><span>3 Rojo</span></div>
     </div>
-  </section>
+    <section id="lluvia" class="float" aria-label="Lluvia hora por hora">
+      <button id="lluvia-abrir" class="rain-open" hidden>▶ Lluvia: últimas 24 h y próximas 24 h</button>
+      <div id="lluvia-controles" class="rain-controls" hidden>
+        <div class="rain-row">
+          <button id="lluvia-play" class="rain-play" aria-label="Reproducir">▶</button>
+          <input id="lluvia-hora" type="range" min="0" max="23" step="1" value="23" aria-label="Hora">
+          <button id="lluvia-cerrar" class="rain-close" aria-label="Cerrar la lluvia">×</button>
+        </div>
+        <div class="rain-row between-row"><b id="lluvia-etiqueta">…</b><span id="lluvia-fuente" class="muted">hora de Lima</span></div>
+        <div class="rain-scale" aria-hidden="true"></div>
+        <div class="rain-ticks"><span>0,1</span><span>1</span><span>5</span><span>20</span><span>50</span></div>
+        <p id="lluvia-nota" class="rain-note"></p>
+      </div>
+    </section>
+  </div>
   <script type="module" src="/src/main.ts"></script>
   <!-- Cloudflare Web Analytics: visitas y rendimiento anónimos, sin cookies -->
   <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "795d71e17aae4463b4a3750abeb07994"}'></script>

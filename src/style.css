@@ -146,22 +146,44 @@ a { color: var(--blue); }
 .panel-footer { margin-top: auto; padding: 16px 24px 20px; border-top: 1px solid var(--soft-line); font-size: 12px; line-height: 1.5; color: var(--muted); }
 .panel-footer .warning { margin: 0 0 8px; color: #8e1c24; }
 
-/* En una pantalla angosta el panel va debajo del mapa */
+/* La leyenda y la lluvia van sueltas sobre el mapa (cada una con su posición); el contenedor no se ve */
+#dock { display: contents; }
+
+/* En una pantalla angosta: el mapa arriba, debajo una franja con la leyenda y la lluvia, y debajo el panel, que se
+   desplaza. Sobre el mapa solo quedan el buscador y la atribución, que así se ve entera desde el inicio. */
 @media (max-width: 800px) {
-  :root { --panel: 100vw; }
-  #panel { top: 50%; width: 100%; border-right: 0; border-top: 1px solid var(--line); }
-  #mapa { left: 0; bottom: 50%; }
-  .map-loading { top: 50%; }
-  #legend { left: 8px; bottom: calc(50% + 44px); padding: 8px 10px; gap: 5px; }
-  #legend b { font-size: 11px; }
-  #legend .bar span { width: 50px; height: 8px; }
-  #legend .names { width: 150px; font-size: 10px; }
-  #search { top: 8px; right: 8px; width: min(280px, calc(100vw - 16px)); }
-  #lluvia { right: 8px; bottom: calc(50% + 44px); }
-  .rain-open { height: 36px; padding: 0 10px; font-size: 12px; }
-  .rain-controls { width: calc(100vw - 16px); padding: 8px 10px; gap: 4px; }
-  .rain-note { display: none; }
+  :root { --panel: 100vw; --map-height: 50dvh; }
+  body { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+  #mapa { position: relative; inset: auto; order: 1; flex: 0 0 var(--map-height); }
+  #dock {
+    order: 2; display: flex; flex-direction: column; gap: 8px; padding: 8px 12px 10px;
+    background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--soft-line);
   }
+  #dock .float { position: static; box-shadow: none; }
+  #panel { position: relative; inset: auto; order: 3; flex: 1; min-height: 0; width: 100%; border-right: 0; }
+
+  /* La leyenda en una sola línea: «Aviso de lluvia (24 h) ● Amarillo ● Naranja ● Rojo» */
+  #legend { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 0; border-radius: 0; }
+  #legend b { font-size: 11px; white-space: nowrap; }
+  #legend .bar { display: none; }
+  #legend .names { display: flex; gap: 10px; width: auto; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  #legend .names span { display: inline-flex; align-items: center; gap: 5px; }
+  #legend .names span::before { content: ''; width: 10px; height: 10px; border-radius: 50%; }
+  #legend .names span:nth-child(1)::before { background: #F4C430; }
+  #legend .names span:nth-child(2)::before { background: #EE7D2B; }
+  #legend .names span:nth-child(3)::before { background: #C3262F; }
+
+  /* La lluvia, compacta: la barra con la hora y una escala fina de colores */
+  #lluvia { border-radius: 0; }
+  .rain-open { width: 100%; height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; font-size: 13px; }
+  .rain-controls { width: 100%; padding: 0; gap: 4px; }
+  .rain-play { width: 32px; height: 32px; font-size: 12px; }
+  .rain-scale { height: 5px; }
+  .rain-ticks, .rain-note { display: none; }
+
+  #search { top: 8px; right: 8px; width: min(220px, calc(100vw - 16px)); }
+  #search input { height: 40px; }
+}
 
 /* El atributo hidden tiene que ganarle a cualquier display que se ponga */
 [hidden] { display: none !important; }
