@@ -1,6 +1,7 @@
 import './style.css'
-import { boundsOfShapes, departmentAt, loadData, loadShapes, normalize, provinceShapes, shapeAt, type Department, type Shape, type Shapes } from './data'
+import { boundsOfShapes, departmentAt, loadData, loadShapes, normalize, provinceShapes, shapeAt, titleCase, type Department, type Shape, type Shapes } from './data'
 import { createPanel } from './panel'
+import { parseRoute, pathOf, slug, type Route } from './rutas'
 import { setupSearch } from './search'
 import type { HoverTarget, MapApi } from './map'
 
@@ -67,37 +68,111 @@ async function main() {
     mapApi?.reveal(shape.bounds)
   }
 
+  // ---- La dirección de cada lugar (ver rutas.ts) ----
+  const homeTitle = document.title
+  /** Pone en la dirección y en el título el lugar que se muestra. `replace` no agrega un paso al historial: se usa cuando
+   * el lugar cambia solo, al pasear por el mapa, o al corregir una dirección escrita a mano */
+  const syncUrl = (replace = false) => {
+    const names: string[] = []
+    let label = ''
+    if (selected) {
+      names.push(selected.name)
+      label = selected.name
+      const province = focusedProvince && shapesReady?.provinces[focusedProvince]
+      if (province) {
+        names.push(province)
+        label = `${titleCase(province)}, ${selected.name}`
+        const district = chosenUbigeo && shapesReady?.list.find((shape) => shape.ubigeo === chosenUbigeo)
+        if (district) {
+          names.push(district.name)
+          label = `${titleCase(district.name)}, ${titleCase(province)}`
+        }
+      }
+    }
+    const path = names.length ? pathOf(...names) : '/'
+    document.title = names.length ? `${label} · Perú Alerta Lluvia` : homeTitle
+    if (location.pathname !== path) history[replace ? 'replaceState' : 'pushState'](null, '', path)
+  }
+
+  /** Muestra el lugar de una dirección, al abrir un enlace o al ir atrás y adelante. Devuelve `false` si no existe. */
+  const applyRoute = async (route: Route): Promise<boolean> => {
+    const department = data.departments.find((candidate) => slug(candidate.name) === route.department)
+    if (!department) return false
+    show(department, 'mapa')
+    fit(department.bounds)
+    if (route.province) {
+      const shapes = await loadShapes().catch(() => undefined)
+      if (shapes) {
+        shapesReady = shapes
+        const departmentCode = Object.keys(shapes.departments).find((code) => slug(shapes.departments[code] ?? '') === route.department)
+        const prefix = departmentCode && Object.keys(shapes.provinces).find((code) => code.startsWith(departmentCode) && slug(shapes.provinces[code] ?? '') === route.province)
+        if (prefix) {
+          focusProvince(shapes, prefix, true)
+          const district = route.district && shapes.list.find((shape) => shape.ubigeo.startsWith(prefix) && slug(shape.name) === route.district)
+          if (district) chooseDistrict(shapes, district)
+        }
+      }
+    }
+    // La forma correcta de la dirección (por ejemplo, sin la parte que no existe) y el título
+    syncUrl(true)
+    return true
+  }
+
   const panel = createPanel($('panel'), data, {
     selectDistrict: async (ubigeo) => {
       const shapes = (shapesReady = await loadShapes())
       const shape = shapes.list.find((candidate) => candidate.ubigeo === ubigeo)
       if (shape) chooseDistrict(shapes, shape)
+      syncUrl()
     },
-    clearDistrict,
+    clearDistrict: () => {
+      clearDistrict()
+      syncUrl()
+    },
     goDepartment: () => {
       if (!selected) return
       show(selected, 'mapa')
       fit(selected.bounds)
+      syncUrl()
     },
     goProvince: () => {
       if (focusedProvince && shapesReady) focusProvince(shapesReady, focusedProvince, true)
+      syncUrl()
     },
   })
   document.body.classList.add('ready')
 
-  // Al empezar el panel muestra Lima, con la lista de sus avisos, y el mapa todo el Perú, con todas las zonas de aviso
+  // Al empezar el panel muestra Lima, con la lista de sus avisos, y el mapa todo el Perú, con todas las zonas de aviso.
+  // Si la dirección es la de un lugar (un enlace compartido), se muestra ese lugar.
   const lima = data.departments.find((department) => department.name === 'Lima') ?? data.departments[0]
-  if (lima) show(lima, 'inicio')
   const peru = data.departments.reduce<[number, number, number, number]>(
     ([west, south, east, north], { bounds }) => [Math.min(west, bounds[0]), Math.min(south, bounds[1]), Math.max(east, bounds[2]), Math.max(north, bounds[3])],
     [180, 90, -180, -90],
   )
-  fit(peru)
+  const goHome = () => {
+    if (lima) show(lima, 'inicio')
+    fit(peru)
+    document.title = homeTitle
+  }
+  const route = parseRoute(location.pathname)
+  if (!route.department) goHome()
+  else if (!(await applyRoute(route))) {
+    // Un lugar que no existe: el inicio, con su dirección
+    goHome()
+    history.replaceState(null, '', '/')
+  }
+  // Atrás y adelante en el navegador
+  window.addEventListener('popstate', () => {
+    const next = parseRoute(location.pathname)
+    if (!next.department) goHome()
+    else void applyRoute(next)
+  })
 
   // ---- El buscador de departamentos ----
   setupSearch(data, (department) => {
     show(department, 'mapa')
     fit(department.bounds)
+    syncUrl()
   })
 
   // ---- El mapa, después ----
@@ -110,8 +185,14 @@ async function main() {
       if (shapesReady && shape) {
         const prefix = shape.ubigeo.slice(0, 4)
         const sameDepartment = normalize(shapesReady.departments[prefix.slice(0, 2)] ?? '') === normalize(panel.current() ?? '')
-        if (prefix === focusedProvince) return chooseDistrict(shapesReady, shape)
-        if (sameDepartment) return focusProvince(shapesReady, prefix, true)
+        if (prefix === focusedProvince) {
+          chooseDistrict(shapesReady, shape)
+          return syncUrl()
+        }
+        if (sameDepartment) {
+          focusProvince(shapesReady, prefix, true)
+          return syncUrl()
+        }
       }
       // En otro departamento, sin las formas (todavía se bajan) o fuera de un distrito, el toque elige el departamento entero
       void loadShapes()
@@ -121,6 +202,7 @@ async function main() {
       if (department) {
         show(department, 'mapa')
         fit(department.bounds)
+        syncUrl()
       }
     },
     onHover(longitude, latitude): HoverTarget | undefined {
@@ -142,7 +224,10 @@ async function main() {
       // Con una provincia enfocada el panel no se mueve solo: para ir a otra hay que tocarla.
       if (zoom < 6 || districtChosen || focusedProvince) return
       const department = departmentAt(data.departments, longitude, latitude)
-      if (department && department.name !== panel.current()) show(department, 'mapa')
+      if (department && department.name !== panel.current()) {
+        show(department, 'mapa')
+        syncUrl(true)
+      }
     },
   })
   document.body.classList.add('map-ready')
