@@ -5,11 +5,51 @@
 // Al abrir el mapa se muestra la lluvia de ahora (una sola imagen). El resto se baja recién cuando se toca el «play»
 // o la barra: entonces se piden todas las horas a la vez, para que la reproducción no espere.
 
-import type { Map as GlMap } from 'maplibre-gl'
+import { addProtocol, type Map as GlMap } from 'maplibre-gl'
 import type { Ring } from './data'
+import { PALETTE, colorIndex } from './escala'
+import { NASA_RAIN_COLORS } from './lluvia-nasa-colores'
 import { forecastFrames } from './pronostico'
 
 const GIBS = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best'
+/** Los mosaicos de la NASA se piden con este protocolo, que los vuelve a pintar (ver `recolor`) */
+const NASA_PROTOCOL = 'lluvia-nasa'
+
+/** Del color de la NASA (0xRRGGBB) a los mm/h que representa */
+const NASA_RAIN = new Map(NASA_RAIN_COLORS)
+
+/**
+ * La NASA pinta la lluvia de verde a rojo, que se confunde con los colores del aviso del SENAMHI. Cada píxel se
+ * traduce a mm/h con su tabla de colores y se vuelve a pintar con la escala de la web (la de la leyenda y del
+ * pronóstico), con el mismo borde suave que el pronóstico.
+ */
+async function recolor(url: string, signal: AbortSignal): Promise<ArrayBuffer> {
+  const response = await fetch(url.replace(`${NASA_PROTOCOL}://`, 'https://'), { signal })
+  if (!response.ok) throw new Error(`NASA GIBS: ${response.status}`)
+  const bitmap = await createImageBitmap(await response.blob())
+  const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
+  const context = canvas.getContext('2d', { willReadFrequently: true })!
+  context.drawImage(bitmap, 0, 0)
+  const image = context.getImageData(0, 0, bitmap.width, bitmap.height)
+  const pixels = image.data
+  for (let p = 0; p < pixels.length; p += 4) {
+    if (pixels[p + 3] === 0) continue
+    const mm = NASA_RAIN.get((pixels[p]! << 16) | (pixels[p + 1]! << 8) | pixels[p + 2]!)
+    if (mm === undefined || mm < 0.1) {
+      pixels[p + 3] = 0
+      continue
+    }
+    const [red, green, blue] = PALETTE[colorIndex(mm)]!
+    pixels[p] = red
+    pixels[p + 1] = green
+    pixels[p + 2] = blue
+    pixels[p + 3] = Math.min(255, Math.round(((mm - 0.1) / 0.3) * 255))
+  }
+  context.putImageData(image, 0, 0)
+  return (await canvas.convertToBlob({ type: 'image/png' })).arrayBuffer()
+}
+
+addProtocol(NASA_PROTOCOL, async (params, abortController) => ({ data: await recolor(params.url, abortController.signal) }))
 const LAYER = 'IMERG_Precipitation_Rate_30min'
 const MATRIX = 'GoogleMapsCompatible_Level6'
 const HOURS = 24
@@ -43,7 +83,8 @@ async function imergFrames(): Promise<Frame[]> {
   last ??= new Date(Math.floor((now - 7 * 3_600_000) / halfHour) * halfHour)
   return Array.from({ length: HOURS }, (_, i) => {
     const time = new Date(last.getTime() - (HOURS - 1 - i) * 3_600_000)
-    return { time, source: { type: 'raster', tiles: [`${GIBS}/${LAYER}/default/${time.toISOString().replace('.000', '')}/${MATRIX}/{z}/{y}/{x}.png`], tileSize: 256, maxzoom: 6, bounds: PERU } }
+    const tiles = `${GIBS}/${LAYER}/default/${time.toISOString().replace('.000', '')}/${MATRIX}/{z}/{y}/{x}.png`.replace('https://', `${NASA_PROTOCOL}://`)
+    return { time, source: { type: 'raster', tiles: [tiles], tileSize: 256, maxzoom: 6, bounds: PERU } }
   })
 }
 
