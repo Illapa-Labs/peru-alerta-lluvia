@@ -498,17 +498,30 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     'Medimos visitas y velocidad de carga de forma anónima, sin cookies ni datos personales.',
   )
 
-  // ---- En el celular, el panel es una hoja al pie del mapa ----
-  // Cerrada muestra solo lo que importa: el lugar, su aviso y qué hacer. Con un toque se abre con todo el detalle.
-  const peek = el('button', 'peek')
-  peek.type = 'button'
+  // ---- El resumen: el lugar, su aviso, qué hacer y de cuándo es ----
+  // Va primero en el panel, en el celular y en la computadora; el detalle va debajo. En el celular el panel es una hoja
+  // al pie del mapa: cerrada muestra solo el resumen, y con un toque en él se abre con todo el detalle.
+  const narrow = matchMedia('(max-width: 800px)').matches
+  const peek = el('div', 'peek')
   const setOpen = (open: boolean) => {
     root.classList.toggle('sheet-open', open)
+    if (!narrow) return
     peek.setAttribute('aria-expanded', String(open))
     peek.querySelector('.peek-more')?.replaceChildren(open ? 'Cerrar ▾' : 'Ver más ▴')
     if (!open) root.scrollTop = 0
   }
-  peek.addEventListener('click', () => setOpen(!root.classList.contains('sheet-open')))
+  if (narrow) {
+    peek.setAttribute('role', 'button')
+    peek.tabIndex = 0
+    const toggle = () => setOpen(!root.classList.contains('sheet-open'))
+    peek.addEventListener('click', toggle)
+    peek.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        toggle()
+      }
+    })
+  }
 
   function renderPeek() {
     let place = 'Perú'
@@ -528,16 +541,16 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
         const levels = new Map(data.districts.map((district) => [district.ubigeo, district.nivel]))
         const top = province.distritos.reduce((top, shape) => Math.max(top, (levels.get(shape.ubigeo) ?? 1) - 2), -1)
         level = LEVELS[top]
-        hint = 'Toca tu distrito en el mapa para ver su aviso.'
+        hint = `${narrow ? 'Toca' : 'Haz clic en'} tu distrito en el mapa para ver su aviso.`
       } else {
         place = home.name
         where = 'Departamento'
         level = home.highest !== undefined ? LEVELS[home.highest] : undefined
-        hint = 'Toca tu provincia o tu distrito en el mapa.'
+        hint = `${narrow ? 'Toca' : 'Haz clic en'} tu provincia o tu distrito en el mapa, o búscalo.`
       }
     }
-    // Sin número: el nivel no le dice nada a nadie; el color y la palabra de al lado sí
-    const badge = text(level ? '!' : '–', 'peek-badge')
+    // El nivel con el número del SENAMHI, como en las noticias: informa sin alarmar
+    const badge = level ? el('span', 'peek-badge', text('NIVEL', 'peek-badge-label'), text(String(level.n), '')) : text('–', 'peek-badge')
     badge.style.background = level?.strong ?? '#9aa7b4'
     // «Aviso rojo · Lluvia muy fuerte», y los milímetros aparte, en chico, para que no se partan
     const [rainWords, rainAmount] = level ? level.rain.split(' · ') : []
@@ -546,8 +559,8 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     if (level) status.style.color = level.ink
     const todo = level ? el('span', 'peek-todo', el('b', '', 'Qué hacer: '), level.hereTodo) : ''
     peek.replaceChildren(
-      el('span', 'peek-handle'),
-      el('span', 'peek-row', badge, el('span', 'peek-text', text(place, 'peek-place'), where ? text(where, 'peek-where') : ''), text(root.classList.contains('sheet-open') ? 'Cerrar ▾' : 'Ver más ▴', 'peek-more')),
+      narrow ? el('span', 'peek-handle') : '',
+      el('span', 'peek-row', badge, el('span', 'peek-text', text(place, 'peek-place'), where ? text(where, 'peek-where') : ''), narrow ? text(root.classList.contains('sheet-open') ? 'Cerrar ▾' : 'Ver más ▴', 'peek-more') : ''),
       status,
       todo,
       hint ? text(hint, 'peek-hint') : '',
@@ -564,7 +577,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     renderOfficial()
   }
 
-  root.replaceChildren(peek, header, el('section', 'block', placeBody), folds, footer)
+  root.replaceChildren(header, peek, el('section', 'block', placeBody), folds, footer)
   setOpen(false)
   update()
 

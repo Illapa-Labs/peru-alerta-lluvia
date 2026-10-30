@@ -132,6 +132,8 @@ Priority: **Must** (useless without it), **Should** (important, can wait a littl
 4. **Words before numbers.** "Very heavy rain", and under it "80 mm or more in 24 h".
 5. **Colour never alone.** The legend says what each colour means.
 6. **Within thumb reach.** Controls at the bottom; at the top, only what is read.
+7. **Inform, do not alarm.** The level is given with SENAMHI's number (2, 3 and 4, the one heard on the news: "red alert, level 4"), its colour and its word; no alarm signs.
+8. **The same line on phone and computer.** First the summary (place, level, what to do, date), then the detail. On a computer the detail is already in view; on a phone, one tap away.
 
 ## How to measure (HEART, without cookies)
 
