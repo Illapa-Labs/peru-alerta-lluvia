@@ -4,7 +4,10 @@
   "name": "illapa-alerta-lluvia",
   "compatibility_date": "2026-10-01",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    // Cada lugar tiene su dirección (/piura/piura/tambo-grande, ver src/rutas.ts): cualquier ruta que no sea un archivo
+    // sirve la página, y la web muestra ese lugar
+    "not_found_handling": "single-page-application"
   },
   // La dirección pública. Cloudflare crea el registro DNS y el certificado al desplegar.
   "routes": [{ "pattern": "alerta.illapalabs.org", "custom_domain": true }],
