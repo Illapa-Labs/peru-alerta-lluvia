@@ -15,6 +15,19 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, .
 
 const text = (content: string, className: string) => el('span', className, content)
 
+// Las páginas oficiales de los avisos. La portada del SENAMHI ya no los muestra: manda al Observatorio del SENAMHI
+const OFFICIAL_RAIN = 'https://observatorio.senamhi.gob.pe/gestion-riesgo-desastres/aviso-lluvias-intensas-24h/'
+const OFFICIAL_RAVINES = 'https://www.senamhi.gob.pe/main.php?p=aviso-activacion-quebrada'
+
+/** Un enlace que se abre en otra pestaña */
+function outLink(label: string, href: string) {
+  const link = el('a', '', label)
+  link.href = href
+  link.target = '_blank'
+  link.rel = 'noopener'
+  return link
+}
+
 const MONTHS = ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'set.', 'oct.', 'nov.', 'dic.']
 const WEEKDAYS = ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.']
 
@@ -429,6 +442,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     official.append(el('p', 'small muted', issued.join(' · ')))
     if (area.descripcio) official.append(el('p', 'quote', `“${area.descripcio}”`))
     if (area.recomendac) official.append(el('p', 'quote', el('strong', '', 'Recomendación: '), `“${area.recomendac}”`))
+    official.append(el('p', 'small', 'En el SENAMHI: ', outLink('aviso de lluvias intensas a 24 horas', OFFICIAL_RAIN), ' y ', outLink('aviso de activación de quebradas', OFFICIAL_RAVINES), '.'))
     official.append(el('p', 'small muted', 'Capas del SENAMHI: g_prono_pp_24h (aviso de lluvia) y g_acti_quebrada (activación de quebradas).'))
   }
 
@@ -468,12 +482,14 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   const footer = el('footer', 'panel-footer')
   if (data.updated) {
     const when = new Date(data.updated).toLocaleString('es-PE', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
-    footer.append(el('p', data.stale ? 'warning' : '', data.stale ? `Los datos son del ${when}: puede haber un aviso nuevo que todavía no se ve. Revisa también la página del SENAMHI.` : `Datos del SENAMHI bajados el ${when}`))
+    footer.append(
+      data.stale
+        ? el('p', 'warning', `Los datos son del ${when}: puede haber un aviso nuevo que todavía no se ve. Revisa también el `, outLink('aviso del SENAMHI', OFFICIAL_RAIN), '.')
+        : el('p', '', `Datos del SENAMHI bajados el ${when}`),
+    )
   }
-  const link = el('a', '', 'SENAMHI')
-  link.href = 'https://www.senamhi.gob.pe'
-  link.target = '_blank'
-  link.rel = 'noopener'
+  // El aviso de lluvias de 24 horas del SENAMHI, el que muestra esta web
+  const link = outLink('SENAMHI, aviso de lluvias intensas a 24 horas', OFFICIAL_RAIN)
   const lab = el('a', '', 'Illapa Labs')
   lab.href = 'https://illapalabs.org'
   footer.append(

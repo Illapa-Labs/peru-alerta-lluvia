@@ -16,7 +16,7 @@
 
 A map of the areas of Peru under a heavy rain warning, built on information from SENAMHI (the national meteorology and hydrology service). It shows the warning by department, province and district, how many people live in areas with a ravine-activation warning, the rain of the last hours and the forecast.
 
-> **This is not an official site.** The source of the warnings is [SENAMHI](https://www.senamhi.gob.pe). In an emergency, call 115 (INDECI) or 116 (Fire Department) in Peru.
+> **This is not an official site.** The source of the warnings is [SENAMHI](https://www.gob.pe/senamhi) ([24-hour heavy rain warning](https://observatorio.senamhi.gob.pe/gestion-riesgo-desastres/aviso-lluvias-intensas-24h/)). In an emergency, call 115 (INDECI) or 116 (Fire Department) in Peru.
 
 ![Peru with SENAMHI's rain warning areas and the rain of the last hours over a terrain map](docs/capturas/inicio.jpg)
 

@@ -8,7 +8,7 @@ This project does not own this data and does not guarantee it.
 
 | Data | Source | License or terms | Attribution and status |
 |---|---|---|---|
-| Rain warnings, ravine activation and district boundaries | [SENAMHI](https://www.senamhi.gob.pe) | No published reuse license was found | **Pending:** written permission will be requested from SENAMHI before redistributing its data |
+| Rain warnings, ravine activation and district boundaries | [SENAMHI](https://www.gob.pe/senamhi) | No published reuse license was found | **Pending:** written permission will be requested from SENAMHI before redistributing its data |
 | Population of districts and departments (2017 census) | INEI | Not verified | The source is cited. **Pending:** verify the reuse conditions |
 | Satellite rainfall estimate (GOES-19) | NOAA, via AWS Open Data | Public NOAA data (free to use) | Attribution is requested; NOAA endorsement must not be implied and modified data must not be presented as original. The terms specific to this dataset were not verified |
 | Fallback rainfall (IMERG) | NASA, via GIBS | NASA data is CC0 by default | Citation is requested. GIBS's own terms were not read |
