@@ -132,7 +132,7 @@ Prioridad: **Debe** (sin esto no sirve), **Debería** (importante, puede esperar
 4. **Palabras antes que números.** «Lluvia muy fuerte», y debajo «80 mm o más en 24 h».
 5. **El color nunca solo.** La leyenda dice qué significa cada color.
 6. **Al alcance del pulgar.** Controles abajo; arriba, solo lo que se lee.
-7. **Informar, no alarmar.** El nivel se dice con el número del SENAMHI (2, 3 y 4, el que se oye en las noticias: «alerta roja, nivel 4»), su color y su palabra; sin signos de alarma.
+7. **Informar, no alarmar.** El nivel se dice como lo comunica el SENAMHI: con su color y su palabra (amarillo, naranja, rojo). Sin números (los datos del SENAMHI dicen 2, 3 y 4, y la gente espera 1, 2 y 3) ni signos de alarma.
 8. **La misma línea en el celular y en la computadora.** Primero el resumen (lugar, nivel, qué hacer, fecha), después el detalle. En la computadora el detalle ya está a la vista; en el celular, a un toque.
 
 ## Cómo medir (HEART, sin cookies)

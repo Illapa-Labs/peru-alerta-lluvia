@@ -116,7 +116,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   }
 
   function levelHeader(level: Level) {
-    const badge = el('div', 'badge', text('NIVEL', 'badge-label'), text(String(level.n), 'badge-number'))
+    const badge = el('div', 'badge', text(level.short.toUpperCase(), 'badge-word'))
     badge.style.background = level.strong
     const name = text(level.name, 'level-name')
     name.style.color = level.ink
@@ -394,8 +394,8 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     const buttons = LEVELS.map((level, index) => {
       const bar = el('span', 'bar')
       bar.style.background = level.color
-      const number = el('span', 'level-number', text(String(level.n), ''), mine === index ? text('AQUÍ', 'mine') : '')
-      const button = el('button', 'level-button', bar, number, text(level.short, 'level-short'))
+      const name = el('span', 'level-number', text(level.short, ''), mine === index ? text('AQUÍ', 'mine') : '')
+      const button = el('button', 'level-button', bar, name, text(level.mm, 'level-short'))
       button.setAttribute('aria-pressed', String(picked === index))
       if (picked === index) button.style.background = level.soft
       button.addEventListener('click', () => {
@@ -415,7 +415,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
       el(
         'div',
         'card',
-        el('div', 'level-title', swatch, text(`Nivel ${level.n} · ${level.name}`, 'card-title')),
+        el('div', 'level-title', swatch, text(level.name, 'card-title')),
         el('div', 'stats', box('LLUVIA ESPERADA', level.mm), box('EN TODO EL AVISO', total)),
         text('QUÉ SIGNIFICA', 'label'),
         el('p', 'body', level.means),
@@ -437,7 +437,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     const issued = [`Emitido para el ${longDate(area.fecha) ?? 'día de hoy'}`]
     if (area.respons) issued.push(`por ${area.respons}`)
     issued.push(`${areas.length} áreas`)
-    if (highest !== undefined) issued.push(`nivel más alto: ${LEVELS[highest]!.n}`)
+    if (highest !== undefined) issued.push(`aviso más alto: ${LEVELS[highest]!.short.toLowerCase()}`)
     official.append(el('p', 'small muted', issued.join(' · ')))
     if (area.descripcio) official.append(el('p', 'quote', `“${area.descripcio}”`))
     if (area.recomendac) official.append(el('p', 'quote', el('strong', '', 'Recomendación: '), `“${area.recomendac}”`))
@@ -549,8 +549,9 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
         hint = `${narrow ? 'Toca' : 'Haz clic en'} tu provincia o tu distrito en el mapa, o búscalo.`
       }
     }
-    // El nivel con el número del SENAMHI, como en las noticias: informa sin alarmar
-    const badge = level ? el('span', 'peek-badge', text('NIVEL', 'peek-badge-label'), text(String(level.n), '')) : text('–', 'peek-badge')
+    // El nivel con su color y su palabra, como lo dice el SENAMHI: sin números (los datos dicen 2, 3 y 4, y la gente espera
+    // 1, 2 y 3) ni signos de alarma
+    const badge = text(level ? level.short.toUpperCase() : 'SIN AVISO', 'peek-badge')
     badge.style.background = level?.strong ?? '#9aa7b4'
     // «Aviso rojo · Lluvia muy fuerte», y los milímetros aparte, en chico, para que no se partan
     const [rainWords, rainAmount] = level ? level.rain.split(' · ') : []
