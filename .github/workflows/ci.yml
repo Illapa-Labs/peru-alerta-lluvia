@@ -2,8 +2,11 @@ name: Comprobar que el sitio se construye
 
 # Comprueba que el código pasa la revisión de tipos y que el sitio se construye. Los datos no se bajan aquí:
 # los sirve la API de Illapa (https://github.com/Illapa-Labs/illapa-engine).
+# En un pull request basta una vez: el push solo se comprueba en main (sin esto, cada PR lo corría dos veces, por el
+# push a su rama y por el pull request)
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
