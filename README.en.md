@@ -21,16 +21,28 @@ A project of [Illapa Labs](https://github.com/Illapa-Labs): a community open sou
 
 ## Status and roadmap
 
-Under construction. The code is being migrated piece by piece from the prototype, so this repository does not have the full application yet.
+Under construction. The site is static and light: it asks the [Illapa API](https://github.com/Illapa-Labs/illapa-engine) for the warning, the districts and the forecast, and only keeps the department boundaries and district shapes, which hardly change.
 
 | Stage | Status |
 |---|---|
 | Repository with AGPL license, guides and branching workflow | Done |
 | Document the data sources and their licenses ([DATOS.en.md](DATOS.en.md)) | In progress |
-| Migrate the prototype code, piece by piece | Pending |
-| Illapa API (`illapa-engine`) serving the processed data | Pending |
-| Have this site consume that API and publish it as a static site | Pending |
+| Migrate the prototype code and read the data from the API | Done |
+| Illapa API (`illapa-engine`): warning, districts and forecast | Done |
+| GOES-19 satellite rainfall from the API (NASA's is used for now) | Pending |
+| Publish the API and the site | Pending |
 | Research kit (`illapa-research`) | Pending |
+
+## Running locally
+
+You need [Bun](https://bun.sh) and the [Illapa API](https://github.com/Illapa-Labs/illapa-engine) running on `http://127.0.0.1:8080` (see its README).
+
+```bash
+bun install
+bun run start
+```
+
+The API address is in `.env.development` (locally) and `.env.production` (when building the site). Before sending changes: `bun run typecheck` and `bun run build`.
 
 ## Data and attribution
 

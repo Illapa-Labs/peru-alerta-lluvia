@@ -21,16 +21,28 @@ Un proyecto de [Illapa Labs](https://github.com/Illapa-Labs): proyecto comunitar
 
 ## Estado y hoja de ruta
 
-En construcción. El código se está migrando poco a poco desde el prototipo; por eso este repositorio todavía no tiene la aplicación completa.
+En construcción. La web es un sitio estático y ligero: el aviso, los distritos y el pronóstico los pide a la [API de Illapa](https://github.com/Illapa-Labs/illapa-engine), y en el sitio solo quedan los límites de los departamentos y las formas de los distritos, que casi no cambian.
 
 | Etapa | Estado |
 |---|---|
 | Repositorio con licencia AGPL, guías y flujo de ramas | Hecho |
 | Documentar las fuentes de datos y su licencia ([DATOS.md](DATOS.md)) | En curso |
-| Migrar el código del prototipo, por piezas | Pendiente |
-| API de Illapa (`illapa-engine`) que sirve los datos procesados | Pendiente |
-| Que esta web consuma esa API y se publique como sitio estático | Pendiente |
+| Migrar el código del prototipo y leer los datos de la API | Hecho |
+| API de Illapa (`illapa-engine`): aviso, distritos y pronóstico | Hecho |
+| Lluvia del satélite GOES-19 desde la API (por ahora se usa la de la NASA) | Pendiente |
+| Publicar la API y la web | Pendiente |
 | Kit de investigación (`illapa-research`) | Pendiente |
+
+## Correr en local
+
+Necesitas [Bun](https://bun.sh) y la [API de Illapa](https://github.com/Illapa-Labs/illapa-engine) corriendo en `http://127.0.0.1:8080` (ver su README).
+
+```bash
+bun install
+bun run start
+```
+
+La dirección de la API está en `.env.development` (en local) y `.env.production` (al construir el sitio). Antes de enviar cambios: `bun run typecheck` y `bun run build`.
 
 ## Datos y atribución
 
