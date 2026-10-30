@@ -197,7 +197,7 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     frames = [...past, ...future.map(({ time, url, coordinates }) => ({ time, forecast: true, source: { type: 'image' as const, url, coordinates } }))]
     note.textContent = [
       'Lo que ya cayó: satélite de la NASA, con unas 6 horas de retraso.',
-      future.length ? 'Lo que viene: pronóstico de Open-Meteo.com (CC BY 4.0), unos 33 km, por hora.' : '',
+      future.length ? 'Lo que viene: pronóstico de Open-Meteo.com (CC BY 4.0), unos 22 km, por hora.' : '',
     ].join(' ')
     const attribution = 'Lluvia: NASA GPM IMERG (GIBS)'
     frames.forEach((frame, i) => {

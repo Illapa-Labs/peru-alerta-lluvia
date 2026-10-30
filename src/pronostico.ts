@@ -1,4 +1,4 @@
-// El pronóstico de lluvia de las próximas horas (Open-Meteo, en una malla de unos 33 km que sirve la API de Illapa)
+// El pronóstico de lluvia de las próximas horas (Open-Meteo, en una malla de unos 22 km que sirve la API de Illapa)
 // dibujado como imágenes suaves: entre punto y punto se interpola, y se recorta al contorno del Perú.
 
 import { api } from './api'
