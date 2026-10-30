@@ -43,6 +43,7 @@ a { color: var(--blue); }
 
 #legend { left: calc(min(var(--panel), 45vw) + 20px); bottom: 36px; padding: 12px 14px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
 #legend b { font-size: 12px; color: #33404d; }
+#legend .legend-source { font-weight: 400; color: var(--muted); }
 #legend .bar { display: flex; }
 #legend .bar span { width: 75px; height: 10px; }
 #legend .bar span:first-child { border-radius: 5px 0 0 5px; }
@@ -188,11 +189,12 @@ a { color: var(--blue); }
   #mapa .maplibregl-ctrl-top-right { top: 46px; }
   #dock .float { box-shadow: 0 1px 6px rgba(23, 32, 42, 0.18); }
 
-  /* La leyenda, chica, arriba a la izquierda del buscador: «Aviso de lluvia» y lo que dice cada color, uno debajo del
+  /* La leyenda, chica, arriba a la izquierda del buscador: «Aviso de lluvia», de quién es y para cuánto tiempo, y lo que dice cada color, uno debajo del
      otro (el color solo no basta, y el número del nivel no le dice nada a nadie) */
   #legend { left: 8px; right: auto; top: 8px; bottom: auto; gap: 3px; padding: 6px 10px; border-radius: 10px; }
   #legend b { font-size: 11px; }
-  #legend .legend-long, #legend .bar { display: none; }
+  #legend .legend-source { display: block; font-size: 10px; }
+  #legend .bar { display: none; }
   #legend .names { display: flex; flex-direction: column; gap: 3px; width: auto; font-size: 11px; font-weight: 600; white-space: nowrap; }
   #legend .names span { display: inline-flex; align-items: center; gap: 5px; }
   #legend .names span::before { content: ''; width: 10px; height: 10px; border-radius: 50%; }
