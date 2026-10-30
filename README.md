@@ -9,15 +9,44 @@
 
 # Perú Alerta Lluvia
 
+[![Sitio](https://img.shields.io/badge/sitio-alerta.illapalabs.org-1F5FA8.svg)](https://alerta.illapalabs.org)
 [![Licencia: AGPL v3](https://img.shields.io/badge/licencia-AGPL%20v3-blue.svg)](LICENSE)
+
+**Sitio: [alerta.illapalabs.org](https://alerta.illapalabs.org)**
 
 Mapa de las zonas del Perú con aviso de lluvias fuertes, con la información del SENAMHI. Muestra el aviso por departamento, provincia y distrito, cuánta gente vive en las zonas con aviso de activación de quebradas, la lluvia de las últimas horas y el pronóstico.
 
 > **No es un sitio oficial.** La fuente de los avisos es el [SENAMHI](https://www.senamhi.gob.pe). Ante una emergencia llama al 115 (INDECI) o al 116 (Bomberos).
 
-![Aviso de lluvia en Lima: panel con el nivel y la lista de distritos, y el mapa con el relieve](docs/capturas/inicio.jpg)
+![El Perú con las zonas del aviso de lluvia del SENAMHI y la lluvia de las últimas horas sobre el mapa con relieve](docs/capturas/inicio.jpg)
 
 Un proyecto de [Illapa Labs](https://github.com/Illapa-Labs): proyecto comunitario de código abierto, sin anuncios y sin fines de lucro.
+
+## Qué muestra
+
+### El aviso de tu departamento
+
+Elige un departamento en el buscador o tocándolo en el mapa: el panel dice el nivel más alto del aviso, qué parte del departamento cubre cada nivel, qué hacer, y la lista de distritos con aviso con su población y cuánta gente vive en zonas donde pueden activarse las quebradas.
+
+![Piura con aviso rojo: el nivel, qué parte del departamento cubre cada nivel, qué hacer y los distritos con aviso](docs/capturas/departamento.jpg)
+
+### Hasta tu distrito
+
+Tocando el mapa se baja de a un escalón: del departamento a la provincia, y de la provincia al distrito. Cada distrito muestra su aviso y qué hacer, y las migas de arriba llevan de vuelta.
+
+![Tambo Grande (Piura) elegido: su aviso, qué hacer y los otros distritos de la provincia](docs/capturas/distrito.jpg)
+
+### La lluvia: lo que cayó y lo que viene
+
+Una barra recorre las últimas 24 horas de lluvia vista por satélite (NASA) y las próximas 24 del pronóstico (Open-Meteo), hora por hora, debajo de las zonas del aviso.
+
+![La lluvia pronosticada para las próximas horas sobre las zonas del aviso](docs/capturas/lluvia.jpg)
+
+### En el celular
+
+Pensada para leerse rápido y con conexión lenta: el panel se muestra antes que el mapa, que es lo más pesado.
+
+<p align="center"><img alt="La web en un celular: el mapa arriba y el aviso de Lima abajo" src="docs/capturas/celular.jpg" width="300"></p>
 
 ## Estado y hoja de ruta
 

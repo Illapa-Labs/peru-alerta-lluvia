@@ -9,15 +9,44 @@
 
 # Perú Alerta Lluvia
 
+[![Site](https://img.shields.io/badge/site-alerta.illapalabs.org-1F5FA8.svg)](https://alerta.illapalabs.org)
 [![License: AGPL v3](https://img.shields.io/badge/license-AGPL%20v3-blue.svg)](LICENSE)
+
+**Site: [alerta.illapalabs.org](https://alerta.illapalabs.org)**
 
 A map of the areas of Peru under a heavy rain warning, built on information from SENAMHI (the national meteorology and hydrology service). It shows the warning by department, province and district, how many people live in areas with a ravine-activation warning, the rain of the last hours and the forecast.
 
 > **This is not an official site.** The source of the warnings is [SENAMHI](https://www.senamhi.gob.pe). In an emergency, call 115 (INDECI) or 116 (Fire Department) in Peru.
 
-![Rain warning for Lima: a panel with the warning level and the list of districts, and a map with terrain relief](docs/capturas/inicio.jpg)
+![Peru with SENAMHI's rain warning areas and the rain of the last hours over a terrain map](docs/capturas/inicio.jpg)
 
 A project of [Illapa Labs](https://github.com/Illapa-Labs): a community open source project, with no ads and not for profit.
+
+## What it shows
+
+### The warning for your department
+
+Pick a department in the search box or by tapping the map: the panel shows the highest warning level, how much of the department each level covers, what to do, and the districts with a warning, with their population and how many people live where ravines may activate.
+
+![Piura under a red warning: the level, how much of the department each level covers, what to do and the districts with a warning](docs/capturas/departamento.jpg)
+
+### Down to your district
+
+Tapping the map goes down one step at a time: from department to province, and from province to district. Each district shows its warning and what to do, and the breadcrumbs at the top lead back.
+
+![Tambo Grande (Piura) selected: its warning, what to do and the other districts of the province](docs/capturas/distrito.jpg)
+
+### Rain: what fell and what is coming
+
+A slider runs through the last 24 hours of rain seen by satellite (NASA) and the next 24 hours of forecast (Open-Meteo), hour by hour, under the warning areas.
+
+![The forecast rain for the next hours over the warning areas](docs/capturas/lluvia.jpg)
+
+### On a phone
+
+Made to be read quickly and on slow connections: the panel shows before the map, which is the heaviest part.
+
+<p align="center"><img alt="The site on a phone: the map on top and the warning for Lima below" src="docs/capturas/celular.jpg" width="300"></p>
 
 ## Status and roadmap
 
