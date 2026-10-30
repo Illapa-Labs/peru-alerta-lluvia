@@ -2,7 +2,7 @@
 // en español y en un tono sobrio. Se construye con textContent: los datos de la API nunca se
 // interpretan como HTML.
 
-import { type AppData, type Department, type District, type Home, type Level, type Shape, type Shapes, LEVELS, districtsOf, exposure, homeOf as sharedHomeOf, neighborsOf, normalize, titleCase, withDistricts } from './data'
+import { CALM, type AppData, type Department, type District, type Home, type Level, type Shape, type Shapes, LEVELS, districtsOf, exposure, homeOf as sharedHomeOf, neighborsOf, normalize, titleCase, withDistricts } from './data'
 
 type Child = Node | string
 
@@ -47,13 +47,6 @@ const percent = (share: number) => {
 
 const zones = (count: number) => `${count} ${count === 1 ? 'zona' : 'zonas'}`
 
-const icon = (paths: string, stroke: string) => {
-  const wrapper = el('span', 'icon')
-  // Los iconos son texto fijo de este archivo, no vienen de los datos
-  wrapper.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`
-  return wrapper
-}
-
 /** De dónde viene el departamento que se muestra. */
 export type Source = 'inicio' | 'mapa'
 
@@ -97,16 +90,11 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   const scale = el('div')
   const official = el('div', 'official')
 
-  // ---- Encabezado ----
-  // De qué día es el aviso. No se dice «hoy»: el aviso del día se publica durante el día, y hasta entonces sigue el de ayer
+  // ---- De qué día es el aviso ----
+  // El panel no lleva un encabezado con el nombre del SENAMHI: haría parecer que esta web es oficial. La fuente se dice
+  // en el resumen, con la fecha. No se dice «hoy»: el aviso del día se publica durante el día, y hasta entonces sigue el de ayer
   const issued = areas[0] && shortDate(areas[0].fecha)
   const stale = areas[0] !== undefined && isStale(areas[0].fecha)
-  const header = el(
-    'header',
-    'panel-header',
-    el('div', 'kicker', icon('<path d="M20 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 4 15.3"></path><path d="M8 19v2M8 13v2M16 19v2M16 13v2M12 21v2M12 15v2"></path>', '#1F5FA8'), 'Aviso de lluvia · SENAMHI'),
-    el('p', `subtitle${stale ? ' stale' : ''}`, issued ? `Aviso del ${issued}, para las 24 horas siguientes${stale ? ' · puede no estar al día' : ''}` : 'Para las próximas 24 horas'),
-  )
 
   function card(fill: string, border: string, ...children: Child[]) {
     const box = el('div', 'card', ...children)
@@ -116,7 +104,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   }
 
   function levelHeader(level: Level) {
-    const badge = el('div', 'badge', text(level.short.toUpperCase(), 'badge-word'))
+    const badge = el('div', 'badge', text('NIVEL', 'badge-label'), text(String(level.n), 'badge-number'))
     badge.style.background = level.strong
     const name = text(level.name, 'level-name')
     name.style.color = level.ink
@@ -394,8 +382,8 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     const buttons = LEVELS.map((level, index) => {
       const bar = el('span', 'bar')
       bar.style.background = level.color
-      const name = el('span', 'level-number', text(level.short, ''), mine === index ? text('AQUÍ', 'mine') : '')
-      const button = el('button', 'level-button', bar, name, text(level.mm, 'level-short'))
+      const number = el('span', 'level-number', text(String(level.n), ''), mine === index ? text('AQUÍ', 'mine') : '')
+      const button = el('button', 'level-button', bar, number, text(level.short, 'level-short'))
       button.setAttribute('aria-pressed', String(picked === index))
       if (picked === index) button.style.background = level.soft
       button.addEventListener('click', () => {
@@ -415,7 +403,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
       el(
         'div',
         'card',
-        el('div', 'level-title', swatch, text(level.name, 'card-title')),
+        el('div', 'level-title', swatch, text(`Nivel ${level.n} · ${level.name}`, 'card-title')),
         el('div', 'stats', box('LLUVIA ESPERADA', level.mm), box('EN TODO EL AVISO', total)),
         text('QUÉ SIGNIFICA', 'label'),
         el('p', 'body', level.means),
@@ -437,7 +425,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     const issued = [`Emitido para el ${longDate(area.fecha) ?? 'día de hoy'}`]
     if (area.respons) issued.push(`por ${area.respons}`)
     issued.push(`${areas.length} áreas`)
-    if (highest !== undefined) issued.push(`aviso más alto: ${LEVELS[highest]!.short.toLowerCase()}`)
+    if (highest !== undefined) issued.push(`nivel más alto: ${LEVELS[highest]!.n} (${LEVELS[highest]!.short.toLowerCase()})`)
     official.append(el('p', 'small muted', issued.join(' · ')))
     if (area.descripcio) official.append(el('p', 'quote', `“${area.descripcio}”`))
     if (area.recomendac) official.append(el('p', 'quote', el('strong', '', 'Recomendación: '), `“${area.recomendac}”`))
@@ -549,16 +537,17 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
         hint = `${narrow ? 'Toca' : 'Haz clic en'} tu provincia o tu distrito en el mapa, o búscalo.`
       }
     }
-    // El nivel con su color y su palabra, como lo dice el SENAMHI: sin números (los datos dicen 2, 3 y 4, y la gente espera
-    // 1, 2 y 3) ni signos de alarma
-    const badge = text(level ? level.short.toUpperCase() : 'SIN AVISO', 'peek-badge')
-    badge.style.background = level?.strong ?? '#9aa7b4'
+    // El nivel con el número de la escala del SENAMHI (1 verde, sin aviso; 2 amarillo; 3 naranja; 4 rojo): informa sin
+    // alarmar, y sin aviso también se dice, en verde
+    const calm = shown && !level
+    const badge = el('span', 'peek-badge', text('NIVEL', 'peek-badge-label'), text(level ? String(level.n) : calm ? String(CALM.n) : '–', ''))
+    badge.style.background = level?.strong ?? (calm ? CALM.strong : '#9aa7b4')
     // «Aviso rojo · Lluvia muy fuerte», y los milímetros aparte, en chico, para que no se partan
     const [rainWords, rainAmount] = level ? level.rain.split(' · ') : []
-    const status = el('span', 'peek-level', !level ? (shown ? 'Sin aviso de lluvia hoy' : 'Cargando el aviso…') : chosen ? `${level.name} · ${rainWords} ` : `${level.name} en parte de ${place}`)
+    const status = el('span', 'peek-level', !level ? (shown ? `${CALM.name} · ${CALM.says}` : 'Cargando el aviso…') : chosen ? `${level.name} · ${rainWords} ` : `${level.name} en parte de ${place}`)
     if (level && chosen && rainAmount) status.append(text(rainAmount, 'peek-amount'))
-    if (level) status.style.color = level.ink
-    const todo = level ? el('span', 'peek-todo', el('b', '', 'Qué hacer: '), level.hereTodo) : ''
+    status.style.color = level?.ink ?? (calm ? CALM.ink : '')
+    const todo = level || calm ? el('span', 'peek-todo', el('b', '', 'Qué hacer: '), level ? level.hereTodo : CALM.todo) : ''
     peek.replaceChildren(
       narrow ? el('span', 'peek-handle') : '',
       el('span', 'peek-row', badge, el('span', 'peek-text', text(place, 'peek-place'), where ? text(where, 'peek-where') : ''), narrow ? text(root.classList.contains('sheet-open') ? 'Cerrar ▾' : 'Ver más ▴', 'peek-more') : ''),
@@ -578,7 +567,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     renderOfficial()
   }
 
-  root.replaceChildren(header, peek, el('section', 'block', placeBody), folds, footer)
+  root.replaceChildren(peek, el('section', 'block', placeBody), folds, footer)
   setOpen(false)
   update()
 

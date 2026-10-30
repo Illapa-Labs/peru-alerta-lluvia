@@ -132,7 +132,7 @@ Priority: **Must** (useless without it), **Should** (important, can wait a littl
 4. **Words before numbers.** "Very heavy rain", and under it "80 mm or more in 24 h".
 5. **Colour never alone.** The legend says what each colour means.
 6. **Within thumb reach.** Controls at the bottom; at the top, only what is read.
-7. **Inform, do not alarm.** The level is given the way SENAMHI communicates it: by its colour and word (yellow, orange, red). No numbers (SENAMHI's data says 2, 3 and 4, while people expect 1, 2 and 3) and no alarm signs.
+7. **Inform, do not alarm.** The level uses SENAMHI's scale, in a square of its colour with its number, and its word beside it: 1 green (no warning: no dangerous rain expected), 2 yellow, 3 orange, 4 red. No warning is said too, in green, so it is clear that all is normal. No alarm signs.
 8. **The same line on phone and computer.** First the summary (place, level, what to do, date), then the detail. On a computer the detail is already in view; on a phone, one tap away.
 
 ## How to measure (HEART, without cookies)

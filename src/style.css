@@ -80,11 +80,7 @@ a { color: var(--blue); }
 .maplibregl-ctrl-attrib { font-size: 11px; }
 
 /* ---- El panel ---- */
-.panel-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--soft-line); display: flex; flex-direction: column; gap: 4px; }
-.kicker { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-.subtitle { margin: 0; font-size: 13px; color: var(--muted); }
-.subtitle.stale, .peek-date.stale { color: #8e1c24; font-weight: 600; }
-.icon { display: inline-flex; flex: none; }
+.peek-date.stale { color: #8e1c24; font-weight: 600; }
 
 .block { padding: 20px 24px 8px; display: flex; flex-direction: column; gap: 12px; }
 .block.tight { padding-top: 8px; }
@@ -113,9 +109,9 @@ a { color: var(--blue); }
 .between { display: flex; justify-content: space-between; font-size: 11px; }
 
 .level-header { display: flex; align-items: center; gap: 14px; }
-/* El nivel: su color y su palabra (amarillo, naranja, rojo), sin número */
-.badge { flex: none; height: 32px; padding: 0 12px; border-radius: 8px; color: #fff; display: flex; align-items: center; justify-content: center; }
-.badge-word { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; }
+.badge { flex: none; width: 56px; height: 56px; border-radius: 14px; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
+.badge-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; }
+.badge-number { font-size: 26px; font-weight: 800; }
 .level-text { display: flex; flex-direction: column; gap: 2px; }
 .level-name { font-size: 22px; font-weight: 800; }
 .level-rain { font-size: 14px; }
@@ -159,7 +155,9 @@ a { color: var(--blue); }
    el nombre ni el nivel ni qué hacer. */
 .peek { display: flex; flex-direction: column; gap: 6px; padding: 20px 24px 18px; border-bottom: 1px solid var(--soft-line); background: #fff; }
 .peek-row { display: flex; align-items: center; gap: 12px; }
-.peek-badge { flex: none; height: 30px; padding: 0 10px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; }
+/* El nivel, en un cuadrado de su color: «NIVEL» y el número de la escala del SENAMHI */
+.peek-badge { flex: none; width: 48px; height: 48px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; color: #fff; font-size: 22px; font-weight: 800; }
+.peek-badge-label { font-size: 8px; font-weight: 700; letter-spacing: 0.08em; }
 .peek-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 .peek-place { font-size: 24px; font-weight: 800; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .peek-where { font-size: 13px; color: var(--muted); }
@@ -169,7 +167,7 @@ a { color: var(--blue); }
 .peek-todo { font-size: 14px; line-height: 1.45; color: var(--text); }
 .peek-hint { font-size: 13px; color: var(--muted); }
 .peek-date { font-size: 12px; color: var(--muted); }
-.place-name, .place > .card > .level-header, .place > .card > .todo, .panel-header .subtitle { display: none; }
+.place-name, .place > .card > .level-header, .place > .card > .todo, .place > .card > .card-title { display: none; }
 
 /* En una pantalla angosta el mapa ocupa toda la pantalla. El panel es una hoja al pie: cerrada muestra el lugar, su
    aviso y qué hacer (--sheet es su alto, lo pone main.ts); abierta, todo el detalle. Sobre el mapa flotan el buscador
@@ -186,7 +184,8 @@ a { color: var(--blue); }
   .peek { position: sticky; top: 0; z-index: 1; gap: 4px; width: 100%; padding: 6px 14px 12px; text-align: left; cursor: pointer; }
   .peek-handle { align-self: center; width: 36px; height: 4px; margin-bottom: 4px; border-radius: 2px; background: #c3ccd5; }
   .peek-row { gap: 10px; }
-  .peek-badge { height: 26px; padding: 0 8px; font-size: 11px; }
+  .peek-badge { width: 40px; height: 40px; border-radius: 10px; font-size: 18px; }
+  .peek-badge-label { font-size: 7px; }
   .peek-place { font-size: 18px; }
   .peek-where { font-size: 12px; }
   .peek-level { font-size: 13px; }
@@ -266,7 +265,6 @@ a { color: var(--blue); }
 /* En el celular el panel va apretado: sin el encabezado (la leyenda ya dice qué es) y con menos aire, para que el mapa
    tenga más alto. Va al final para ganarle a las reglas de arriba. */
 @media (max-width: 800px) {
-  .panel-header { display: none; }
   .block { padding: 12px 14px 4px; gap: 8px; }
   .block.tight { padding-top: 4px; }
   .block h2 { font-size: 11px; }
@@ -278,7 +276,9 @@ a { color: var(--blue); }
   .card-title { font-size: 16px; }
   .body, .lead, .row { font-size: 13px; line-height: 1.4; }
   .level-header { gap: 10px; }
-  .badge { height: 28px; padding: 0 10px; }
+  .badge { width: 44px; height: 44px; border-radius: 10px; }
+  .badge-label { font-size: 8px; }
+  .badge-number { font-size: 20px; }
   .level-name { font-size: 18px; }
   .level-rain { font-size: 13px; }
   .todo { padding: 8px 10px; }
