@@ -12,7 +12,7 @@ Este proyecto no es el dueño de estos datos ni los garantiza.
 | Población de distritos y departamentos (Censo 2017) | INEI | No verificado | Se cita la fuente. **Pendiente:** verificar las condiciones de reutilización |
 | Lluvia estimada por satélite (GOES-19) | NOAA, vía AWS Open Data | Datos públicos de NOAA (se pueden usar libremente) | Se pide atribución; no se debe sugerir respaldo de NOAA ni presentar datos modificados como originales. No se verificaron los términos específicos de este conjunto de datos |
 | Lluvia de respaldo (IMERG) | NASA, vía GIBS | Los datos de NASA son CC0 por defecto | Se pide citar la fuente. No se leyeron los términos propios de GIBS |
-| Pronóstico | [Open-Meteo](https://open-meteo.com) | CC BY 4.0; la API gratuita es solo para uso no comercial | Atribución obligatoria. El uso actual (sin anuncios ni suscripciones) cumple la condición no comercial |
+| Pronóstico | Modelo global de 10 km del [UK Met Office](https://www.metoffice.gov.uk), vía [Open-Meteo](https://open-meteo.com) | Datos del Met Office: CC BY-SA 4.0 (Crown copyright). La API gratuita de Open-Meteo es solo para uso no comercial | Atribución obligatoria, y lo derivado (el pronóstico de la API y sus imágenes) se comparte con la misma licencia CC BY-SA 4.0. El uso actual (sin anuncios ni suscripciones) cumple la condición no comercial |
 | Contorno de los departamentos | Natural Earth | Dominio público | No se exige atribución |
 | Mapa base (calles) | OpenFreeMap, con datos de OpenStreetMap y OpenMapTiles | Sus términos no dan una licencia clara ni piden atribución, y el servicio puede suspenderse | La atribución se muestra en el mapa. **Pendiente:** verificar la licencia de los datos y planear alojar mosaicos propios |
 | Relieve | Mapzen / AWS Terrain Tiles | La atribución está en un documento del proyecto Joerd que no se leyó | Se muestra "Mapzen / AWS Terrain Tiles" en el mapa. **Pendiente** |
@@ -23,4 +23,4 @@ Las bibliotecas usadas por el prototipo (MapLibre GL JS y otras) tienen licencia
 
 ## Reconocimientos
 
-Gracias al SENAMHI por publicar los avisos, y a los proyectos MapLibre, Open-Meteo, OpenStreetMap y Natural Earth, y a NOAA y NASA por abrir sus datos.
+Gracias al SENAMHI por publicar los avisos, y a los proyectos MapLibre, Open-Meteo, OpenStreetMap y Natural Earth, y al UK Met Office, NOAA y NASA por abrir sus datos.
