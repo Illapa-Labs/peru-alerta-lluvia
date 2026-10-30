@@ -113,10 +113,11 @@ Priority: **Must** (useless without it), **Should** (important, can wait a littl
 | Save my places | Could | 1 | No |
 | Notify me when my place's warning changes | Could | 1 | No |
 | Quechua and other languages | Could | 1 | No |
+| A detailed view on demand (3D terrain, basins, more rain layers), behind a button; the default view stays flat and light | Could | 3, 4, 6 | No |
 
 ### Non-functional
 
-- **Fast on a poor signal**: the warning (text) shows before the map; first view in under 2.5 seconds on 4G; heavy data (district shapes, rain) loads later.
+- **Fast on a poor signal**: the warning (text) shows before the map; first view in under 2.5 seconds on 4G; heavy data (district shapes, rain) loads later. The map is flat (no 3D terrain) and only the rain hour on screen is downloaded; the others when play is pressed.
 - **Clear**: words before numbers; numbers stay, as detail.
 - **Accessible**: colour is never alone (always with a word); AA contrast; tap targets at least 44 px; works with a screen reader.
 - **One-handed**: what is tapped sits at the bottom; at the top, what is only read (legend, search).

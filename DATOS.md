@@ -15,7 +15,7 @@ Este proyecto no es el dueño de estos datos ni los garantiza.
 | Pronóstico | Modelo global de 10 km del [UK Met Office](https://www.metoffice.gov.uk), vía [Open-Meteo](https://open-meteo.com) | Datos del Met Office: CC BY-SA 4.0 (Crown copyright). La API gratuita de Open-Meteo es solo para uso no comercial | Atribución obligatoria, y lo derivado (el pronóstico de la API y sus imágenes) se comparte con la misma licencia CC BY-SA 4.0. El uso actual (sin anuncios ni suscripciones) cumple la condición no comercial |
 | Contorno de los departamentos | Natural Earth | Dominio público | No se exige atribución |
 | Mapa base (calles) | OpenFreeMap, con datos de OpenStreetMap y OpenMapTiles | Sus términos no dan una licencia clara ni piden atribución, y el servicio puede suspenderse | La atribución se muestra en el mapa. **Pendiente:** verificar la licencia de los datos y planear alojar mosaicos propios |
-| Relieve | Mapzen / AWS Terrain Tiles | La atribución está en un documento del proyecto Joerd que no se leyó | Se muestra "Mapzen / AWS Terrain Tiles" en el mapa. **Pendiente** |
+| Relieve | Mapzen / AWS Terrain Tiles | La atribución está en un documento del proyecto Joerd que no se leyó | **Hoy no se usa:** el mapa es plano. Volvería con una vista 3D a pedido, y entonces hay que resolver su atribución |
 
 ## Dependencias de software
 

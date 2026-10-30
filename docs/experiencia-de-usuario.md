@@ -113,10 +113,11 @@ Prioridad: **Debe** (sin esto no sirve), **Debería** (importante, puede esperar
 | Guardar mis lugares | Puede | 1 | No |
 | Avisarme cuando cambie el aviso de mi lugar (notificaciones) | Puede | 1 | No |
 | Quechua y otras lenguas | Puede | 1 | No |
+| Una vista detallada a pedido (relieve 3D, cuencas, más capas de lluvia), con un botón; la vista de siempre sigue plana y liviana | Puede | 3, 4, 6 | No |
 
 ### No funcionales
 
-- **Rápido con mala señal**: el aviso (texto) aparece antes que el mapa; la primera vista en menos de 2,5 segundos con 4G; lo pesado (formas de los distritos, lluvia) se baja después.
+- **Rápido con mala señal**: el aviso (texto) aparece antes que el mapa; la primera vista en menos de 2,5 segundos con 4G; lo pesado (formas de los distritos, lluvia) se baja después. El mapa es plano (sin relieve 3D) y de la lluvia solo se baja la hora que se ve; las demás, al tocar el «play».
 - **Claro**: palabras antes que números; los números se quedan, pero como detalle.
 - **Accesible**: el color nunca va solo (siempre con palabra); contraste AA; lo que se toca mide al menos 44 px; se puede usar con lector de pantalla.
 - **Con una mano**: lo que se toca va abajo; arriba, lo que solo se lee (leyenda, buscador).

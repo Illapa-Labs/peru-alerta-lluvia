@@ -1,20 +1,21 @@
-// El mapa, con MapLibre GL JS: relieve 3D, calles, el aviso, los departamentos y el contorno del
-// Perú. Se carga después de mostrar el panel, porque es lo más pesado de la página.
+// El mapa, con MapLibre GL JS: plano (2D), con calles, ríos, el aviso, los departamentos y el contorno del Perú. Se
+// carga después de mostrar el panel, porque es lo más pesado de la página. Es plano para que abra rápido y gaste pocos
+// datos: el relieve 3D (los mosaicos de elevación y su sombreado) era lo más pesado del mapa, y queda para una vista
+// aparte, más detallada, que se abra a pedido.
 
 import type { GeoJSONSource, Map as GlMap, MapMouseEvent, StyleSpecification } from 'maplibre-gl'
 import { type AppData, type Department, type Shape, LEVELS } from './data'
 // El worker se empaqueta junto con lo que usa, así funciona igual en desarrollo y en producción
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 
-/** Dónde empieza el mapa: Lima, mirando hacia los Andes. */
-const START = { center: [-76.95, -11.95] as [number, number], zoom: 10, pitch: 58 }
+/** Dónde empieza el mapa si no se le dice otra cosa: todo el Perú */
+const PERU: [number, number, number, number] = [-81.4, -18.4, -68.6, 0.0]
 
 /** El Perú con margen: el mapa no se va más lejos, lo que lo hace mucho más barato. Es más ancho que el país porque
  * la vista no puede salirse de este rectángulo: si fuera justo, en una pantalla ancha no entraría el Perú entero. */
 const MAX_BOUNDS: [number, number, number, number] = [-88.5, -20.5, -61.5, 2.0]
 
 const OPENFREEMAP = 'https://tiles.openfreemap.org/planet'
-const TERRARIUM = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'
 
 const EMPTY = { type: 'FeatureCollection', features: [] } as const
 
@@ -25,7 +26,6 @@ function style(data: AppData): StyleSpecification {
     version: 8,
     sources: {
       calles: { type: 'vector', url: OPENFREEMAP },
-      relieve: { type: 'raster-dem', tiles: [TERRARIUM], encoding: 'terrarium', tileSize: 512, maxzoom: 15, attribution: 'Elevación: Mapzen / AWS Terrain Tiles' },
       aviso: { type: 'geojson', data: data.avisoGeoJson ?? { type: 'FeatureCollection', features: [] } },
       // El contorno del departamento que se señala (azul) y el elegido (azul más fuerte)
       'dep-hover': { type: 'geojson', data: EMPTY },
@@ -34,15 +34,8 @@ function style(data: AppData): StyleSpecification {
       'formas-hover': { type: 'geojson', data: EMPTY },
       'dist-seleccion': { type: 'geojson', data: EMPTY },
     },
-    terrain: { source: 'relieve', exaggeration: 1.25 },
     layers: [
       { id: 'fondo', type: 'background', paint: { 'background-color': '#ECEFF3' } },
-      {
-        id: 'sombras',
-        type: 'hillshade',
-        source: 'relieve',
-        paint: { 'hillshade-exaggeration': 0.55, 'hillshade-shadow-color': '#5B6675', 'hillshade-highlight-color': '#FFFFFF', 'hillshade-accent-color': '#8E99A8' },
-      },
       { id: 'agua', type: 'fill', source: 'calles', 'source-layer': 'water', paint: { 'fill-color': '#B0CCE8' } },
       {
         id: 'edificios',
@@ -173,7 +166,8 @@ export function viewPadding(): { top: number; bottom: number; left: number; righ
   return { top: 96, bottom: sheet + RAIN_BAR + 12, left: 16, right: 16 }
 }
 
-export async function createMap(container: HTMLElement, data: AppData, handlers: MapHandlers): Promise<MapApi> {
+/** `bounds`: lo que se ve al abrir (el lugar de la dirección, o el Perú). Empezar ahí evita bajar mosaicos de otro lugar. */
+export async function createMap(container: HTMLElement, data: AppData, handlers: MapHandlers, bounds = PERU): Promise<MapApi> {
   const [maplibregl] = await Promise.all([import('maplibre-gl'), import('maplibre-gl/dist/maplibre-gl.css')])
 
   maplibregl.setWorkerUrl(workerUrl)
@@ -181,10 +175,14 @@ export async function createMap(container: HTMLElement, data: AppData, handlers:
   const map = new maplibregl.Map({
     container,
     style: style(data),
-    ...START,
+    bounds,
+    fitBoundsOptions: { padding: viewPadding() },
     maxBounds: MAX_BOUNDS,
     minZoom: 4,
-    maxPitch: 80,
+    // Plano: sin inclinar ni girar
+    maxPitch: 0,
+    dragRotate: false,
+    pitchWithRotate: false,
     attributionControl: false,
     // Gastar menos: sin antialiasing, y los mosaicos que no se ven no se guardan de más
     canvasContextAttributes: { antialias: false },
@@ -192,7 +190,7 @@ export async function createMap(container: HTMLElement, data: AppData, handlers:
   })
   // Solo en desarrollo: para mirar el mapa desde la consola
   if (import.meta.env.DEV) (window as any).__map = map
-  map.touchZoomRotate.enableRotation()
+  map.touchZoomRotate.disableRotation()
 
   // La atribución: en el celular va arriba, debajo del buscador (abajo están la lluvia y la hoja del panel), y empieza
   // cerrada en el botón «i» (MapLibre la abre al cargar los datos; se cierra apenas lo hace). En escritorio hay lugar:
@@ -296,7 +294,7 @@ export async function createMap(container: HTMLElement, data: AppData, handlers:
     fit(bounds, animate = true, maxZoom = 11) {
       map.fitBounds(bounds, {
         padding: viewPadding(),
-        pitch: 25,
+        pitch: 0,
         bearing: 0,
         maxZoom,
         duration: animate ? 1400 : 0,
