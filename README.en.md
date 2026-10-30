@@ -30,7 +30,7 @@ Under construction. The site is static and light: it asks the [Illapa API](https
 | Migrate the prototype code and read the data from the API | Done |
 | Illapa API (`illapa-engine`): warning, districts and forecast | Done |
 | GOES-19 satellite rainfall from the API (NASA's is used for now) | Pending |
-| Publish the API (`api.illapalabs.org`) and the site | In progress: the site is being tested on Cloudflare |
+| Publish the API (`api.illapalabs.org`) and the site (`alerta.illapalabs.org`) | Done; the old prototype is still to be retired |
 | Research kit (`illapa-research`) | Pending |
 
 ## Running locally
@@ -46,7 +46,7 @@ The API address is in `.env.development` (locally) and `.env.production` (when b
 
 ## Publishing
 
-The site is static files on Cloudflare (`wrangler.jsonc`), with no server code:
+The site is at https://alerta.illapalabs.org: static files on Cloudflare (`wrangler.jsonc`), with no server code:
 
 ```bash
 bun run build

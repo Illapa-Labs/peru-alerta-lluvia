@@ -30,7 +30,7 @@ En construcción. La web es un sitio estático y ligero: el aviso, los distritos
 | Migrar el código del prototipo y leer los datos de la API | Hecho |
 | API de Illapa (`illapa-engine`): aviso, distritos y pronóstico | Hecho |
 | Lluvia del satélite GOES-19 desde la API (por ahora se usa la de la NASA) | Pendiente |
-| Publicar la API (`api.illapalabs.org`) y la web | En curso: la web está en prueba en Cloudflare |
+| Publicar la API (`api.illapalabs.org`) y la web (`alerta.illapalabs.org`) | Hecho; falta retirar el prototipo anterior |
 | Kit de investigación (`illapa-research`) | Pendiente |
 
 ## Correr en local
@@ -46,7 +46,7 @@ La dirección de la API está en `.env.development` (en local) y `.env.productio
 
 ## Publicar
 
-El sitio son archivos estáticos en Cloudflare (`wrangler.jsonc`), sin código en el servidor:
+El sitio está en https://alerta.illapalabs.org: son archivos estáticos en Cloudflare (`wrangler.jsonc`), sin código en el servidor:
 
 ```bash
 bun run build

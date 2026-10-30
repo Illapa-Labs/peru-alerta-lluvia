@@ -6,5 +6,7 @@
   "assets": {
     "directory": "./dist"
   },
+  // La dirección pública. Cloudflare crea el registro DNS y el certificado al desplegar.
+  "routes": [{ "pattern": "alerta.illapalabs.org", "custom_domain": true }],
   "workers_dev": true
 }
