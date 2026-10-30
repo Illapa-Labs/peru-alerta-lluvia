@@ -46,7 +46,9 @@ La dirección de la API está en `.env.development` (en local) y `.env.productio
 
 ## Publicar
 
-El sitio está en https://alerta.illapalabs.org: son archivos estáticos en Cloudflare (`wrangler.jsonc`), sin código en el servidor:
+El sitio está en https://alerta.illapalabs.org: son archivos estáticos en Cloudflare (`wrangler.jsonc`), sin código en el servidor.
+
+Se publica solo: Cloudflare (Workers Builds) construye y publica cada cambio que llega a `main`, y cada *pull request* recibe una dirección de vista previa, sin tocar la versión pública. Para publicar a mano, por ejemplo si Workers Builds falla:
 
 ```bash
 bun run build

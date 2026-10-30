@@ -46,7 +46,9 @@ The API address is in `.env.development` (locally) and `.env.production` (when b
 
 ## Publishing
 
-The site is at https://alerta.illapalabs.org: static files on Cloudflare (`wrangler.jsonc`), with no server code:
+The site is at https://alerta.illapalabs.org: static files on Cloudflare (`wrangler.jsonc`), with no server code.
+
+It publishes itself: Cloudflare (Workers Builds) builds and publishes every change that reaches `main`, and every pull request gets a preview address without touching the public version. To publish by hand, for example if Workers Builds fails:
 
 ```bash
 bun run build
