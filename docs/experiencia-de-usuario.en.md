@@ -17,7 +17,7 @@ This is a working definition, built from what is known about the warning and the
 
 ## The context
 
-- SENAMHI's warning covers **the next 24 hours** and has three levels: yellow (moderate rain, 10 mm or more), orange (heavy, 40 mm or more) and red (very heavy, 80 mm or more). The real danger is **ravines that flood** (huaicos, debris flows) and rising rivers.
+- SENAMHI's warning covers **the next 24 hours** and uses a four-level scale: 1 green (no warning), 2 yellow (moderate rain, 10 mm or more), 3 orange (heavy, 40 mm or more) and 4 red (very heavy, 80 mm or more). The real danger is **ravines that flood** (huaicos, debris flows) and rising rivers.
 - Almost everyone comes **from a phone**, often through a **WhatsApp** link, on **prepaid data** and sometimes 3G. Many phones are low end.
 - **Millimetres** mean nothing to most people. "Very heavy rain" and "stay away from ravines" do.
 - It is read **outdoors, in a hurry or scared**: it must make sense at a glance, with one hand.

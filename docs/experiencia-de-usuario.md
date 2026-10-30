@@ -17,7 +17,7 @@ Esto es una definición de trabajo, hecha desde lo que se sabe del aviso y de qu
 
 ## El contexto
 
-- El aviso del SENAMHI es **para las próximas 24 horas** y tiene tres niveles: amarillo (lluvia moderada, 10 mm o más), naranja (fuerte, 40 mm o más) y rojo (muy fuerte, 80 mm o más). El peligro real para la gente son las **quebradas que se activan** (huaicos) y los ríos que crecen.
+- El aviso del SENAMHI es **para las próximas 24 horas** y usa una escala de cuatro niveles: 1 verde (sin aviso), 2 amarillo (lluvia moderada, 10 mm o más), 3 naranja (fuerte, 40 mm o más) y 4 rojo (muy fuerte, 80 mm o más). El peligro real para la gente son las **quebradas que se activan** (huaicos) y los ríos que crecen.
 - Casi todos llegan **desde el celular**, muchas veces por un enlace de **WhatsApp**, con **datos prepago** y a veces con 3G. Muchos teléfonos son de gama baja.
 - Los **milímetros** no le dicen nada a la mayoría. «Lluvia muy fuerte» y «aléjate de las quebradas» sí.
 - Se mira **al aire libre, con apuro o con miedo**: tiene que entenderse de un vistazo, con una mano.

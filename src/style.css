@@ -46,11 +46,22 @@ a { color: var(--blue); }
 #legend { left: calc(min(var(--panel), 45vw) + 20px); bottom: 36px; padding: 12px 14px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
 #legend b { font-size: 12px; color: #33404d; }
 #legend .legend-source { font-weight: 400; color: var(--muted); }
-#legend .bar { display: flex; }
-#legend .bar span { width: 75px; height: 10px; }
-#legend .bar span:first-child { border-radius: 5px 0 0 5px; }
-#legend .bar span:last-child { border-radius: 0 5px 5px 0; }
-#legend .names { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 225px; font-size: 11px; color: #33404d; text-align: center; }
+/* Cada nivel con el mismo cuadrado de su color y su número que el resumen del panel, y su palabra */
+#legend .names { display: flex; gap: 12px; font-size: 11px; font-weight: 600; color: #33404d; }
+#legend .names span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+#legend .names span::before { content: attr(data-n); width: 16px; height: 16px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 800; }
+#legend .names span:nth-child(1)::before { background: #B08A10; }
+#legend .names span:nth-child(2)::before { background: #B5571A; }
+#legend .names span:nth-child(3)::before { background: #A3222C; }
+
+/* La marca, arriba del panel en la computadora: el logo y el nombre, que llevan a la página de Illapa Labs */
+.brand { display: flex; align-items: center; gap: 10px; padding: 14px 24px; border-bottom: 1px solid var(--soft-line); color: var(--text); text-decoration: none; }
+.brand:hover .brand-name { color: var(--blue); }
+.brand-logo { width: 30px; height: 30px; flex: none; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+.brand-name { font-size: 15px; font-weight: 800; }
+.brand-lab { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.panel-loading { margin: 0; padding: 20px 24px; color: var(--muted); font-size: 14px; }
 
 /* La lluvia hora por hora (abajo a la derecha del mapa) */
 #lluvia { right: 20px; bottom: 36px; border-radius: 12px; }
@@ -123,7 +134,8 @@ a { color: var(--blue); }
 .alert-text { display: flex; flex-direction: column; }
 .danger { align-self: flex-start; height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: var(--text); color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; }
 
-.levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.scale { padding: 4px 14px 8px; display: flex; flex-direction: column; gap: 10px; }
+.levels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .level-button { min-height: 76px; padding: 0 0 8px; border: 2px solid var(--line); border-radius: 10px; background: #fff; display: flex; flex-direction: column; align-items: stretch; gap: 6px; cursor: pointer; overflow: hidden; text-align: left; }
 .level-button[aria-pressed='true'] { border-color: var(--text); }
 .level-button .bar { height: 8px; }
@@ -203,13 +215,9 @@ a { color: var(--blue); }
   #legend { left: 8px; right: auto; top: 8px; bottom: auto; gap: 3px; padding: 6px 10px; border-radius: 10px; }
   #legend b { font-size: 11px; }
   #legend .legend-source { display: block; font-size: 10px; }
-  #legend .bar { display: none; }
-  #legend .names { display: flex; flex-direction: column; gap: 3px; width: auto; font-size: 11px; font-weight: 600; white-space: nowrap; }
-  #legend .names span { display: inline-flex; align-items: center; gap: 5px; }
-  #legend .names span::before { content: ''; width: 10px; height: 10px; border-radius: 50%; }
-  #legend .names span:nth-child(1)::before { background: #F4C430; }
-  #legend .names span:nth-child(2)::before { background: #EE7D2B; }
-  #legend .names span:nth-child(3)::before { background: #C3262F; }
+  #legend .names { flex-direction: column; gap: 3px; }
+  /* En el celular la marca no va: el espacio es para el mapa (el pie del panel nombra a Illapa Labs) */
+  .brand { display: none; }
 
   /* La lluvia, compacta, encima de la hoja y a todo el ancho */
   #lluvia { top: auto; left: 8px; right: 8px; bottom: calc(var(--sheet) + 8px); border-radius: 12px; }
