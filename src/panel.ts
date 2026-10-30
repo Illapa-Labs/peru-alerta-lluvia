@@ -27,6 +27,14 @@ const shortDate = (fecha: string) => {
   const date = parseDate(fecha)
   return date && `${WEEKDAYS[date.getUTCDay()]}, ${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]}`
 }
+/** Si el aviso es de antes de ayer (en la hora de Lima): el SENAMHI publica uno cada día, así que ya no está al día */
+const isStale = (fecha: string, now = Date.now()) => {
+  const date = parseDate(fecha)
+  if (!date) return false
+  const lima = new Date(now - 5 * 3_600_000)
+  const today = Date.UTC(lima.getUTCFullYear(), lima.getUTCMonth(), lima.getUTCDate(), 12)
+  return today - date.getTime() > 86_400_000
+}
 const longDate = (fecha: string) => {
   const date = parseDate(fecha)
   return date && `${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`
@@ -90,12 +98,14 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   const official = el('div', 'official')
 
   // ---- Encabezado ----
-  const today = areas[0] && shortDate(areas[0].fecha)
+  // De qué día es el aviso. No se dice «hoy»: el aviso del día se publica durante el día, y hasta entonces sigue el de ayer
+  const issued = areas[0] && shortDate(areas[0].fecha)
+  const stale = areas[0] !== undefined && isStale(areas[0].fecha)
   const header = el(
     'header',
     'panel-header',
     el('div', 'kicker', icon('<path d="M20 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 4 15.3"></path><path d="M8 19v2M8 13v2M16 19v2M16 13v2M12 21v2M12 15v2"></path>', '#1F5FA8'), 'Aviso de lluvia · SENAMHI'),
-    el('p', 'subtitle', `Pronóstico${today ? ` para hoy, ${today}` : ''} · próximas 24 horas`),
+    el('p', `subtitle${stale ? ' stale' : ''}`, issued ? `Aviso del ${issued}, para las 24 horas siguientes${stale ? ' · puede no estar al día' : ''}` : 'Para las próximas 24 horas'),
   )
 
   function card(fill: string, border: string, ...children: Child[]) {
@@ -541,6 +551,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
       status,
       todo,
       hint ? text(hint, 'peek-hint') : '',
+      issued ? text(`SENAMHI · aviso del ${issued}, para 24 h${stale ? ' · puede no estar al día' : ''}`, `peek-date${stale ? ' stale' : ''}`) : '',
     )
   }
 

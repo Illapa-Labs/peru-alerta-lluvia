@@ -38,8 +38,10 @@ a { color: var(--blue); }
 #search li { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 14px; cursor: pointer; }
 #search li[aria-selected='true'], #search li:hover { background: #f3f6f8; }
 #search li.empty { color: var(--muted); cursor: default; }
+#search .option-text { display: flex; flex-direction: column; min-width: 0; }
 #search .option-name { font-weight: 600; }
-#search .option-level { margin-left: auto; font-size: 12px; color: var(--muted); }
+#search .option-where { font-size: 12px; color: var(--muted); }
+#search .option-level { flex: none; margin-left: auto; font-size: 12px; color: var(--muted); white-space: nowrap; }
 
 #legend { left: calc(min(var(--panel), 45vw) + 20px); bottom: 36px; padding: 12px 14px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
 #legend b { font-size: 12px; color: #33404d; }
@@ -81,6 +83,7 @@ a { color: var(--blue); }
 .panel-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--soft-line); display: flex; flex-direction: column; gap: 4px; }
 .kicker { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .subtitle { margin: 0; font-size: 13px; color: var(--muted); }
+.subtitle.stale, .peek-date.stale { color: #8e1c24; font-weight: 600; }
 .icon { display: inline-flex; flex: none; }
 
 .block { padding: 20px 24px 8px; display: flex; flex-direction: column; gap: 12px; }
@@ -184,6 +187,7 @@ a { color: var(--blue); }
   #panel .place-name { display: none; }
   .peek-todo { font-size: 13px; line-height: 1.4; color: var(--text); }
   .peek-hint { font-size: 12px; color: var(--muted); }
+  .peek-date { font-size: 11px; color: var(--muted); }
 
   /* La atribución («i») va debajo del buscador */
   #mapa .maplibregl-ctrl-top-right { top: 46px; }
@@ -216,6 +220,9 @@ a { color: var(--blue); }
 
   #search { top: 8px; right: 8px; width: min(220px, calc(100vw - 16px)); }
   #search input { height: 40px; }
+  /* Al buscar, el buscador usa todo el ancho (tapa la leyenda mientras tanto) para que los nombres entren en una línea */
+  #search:focus-within { width: calc(100vw - 16px); }
+  #search li { padding: 8px; }
 }
 
 /* El atributo hidden tiene que ganarle a cualquier display que se ponga */

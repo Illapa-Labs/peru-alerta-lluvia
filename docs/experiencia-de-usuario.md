@@ -101,8 +101,9 @@ Prioridad: **Debe** (sin esto no sirve), **Debería** (importante, puede esperar
 | El mapa es lo primero: las zonas de aviso se ven al abrir | Debe | 1, 3, 4 | Sí |
 | Tocar un lugar en el mapa dice su nivel y qué hacer, sin abrir nada más | Debe | 1 | Sí (hoja cerrada) |
 | Cada lugar tiene su dirección, y el enlace abre ese lugar | Debe | 2, 5 | Sí |
-| Decir de qué fecha es el aviso y que es para 24 horas | Debe | 1, 6 | Solo en la computadora |
-| Buscar un **distrito** o una provincia por su nombre, no solo un departamento | Debe | 1, 5 | No: solo departamentos |
+| Decir de qué fecha es el aviso y que es para 24 horas, y avisar si ya no está al día | Debe | 1, 6 | Sí |
+| Buscar un **distrito** o una provincia por su nombre, no solo un departamento | Debe | 1, 5 | Sí |
+| Buscar por el nombre del pueblo o la ciudad (Chosica está en el distrito de Lurigancho) | Debería | 1 | No |
 | La fuente (SENAMHI), que no es un sitio oficial y los teléfonos de emergencia (115, 116) | Debe | 6 | Sí (al abrir la hoja) |
 | La lluvia de las últimas horas y el pronóstico, con los controles al alcance del pulgar | Debería | 3 | Sí |
 | Un botón de compartir (el menú del teléfono) con el texto del aviso | Debería | 5 | No |

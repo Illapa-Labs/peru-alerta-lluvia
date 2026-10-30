@@ -101,8 +101,9 @@ Priority: **Must** (useless without it), **Should** (important, can wait a littl
 | The map comes first: warning zones visible on opening | Must | 1, 3, 4 | Yes |
 | Tapping a place on the map gives its level and what to do, without opening anything else | Must | 1 | Yes (closed sheet) |
 | Every place has its address, and the link opens that place | Must | 2, 5 | Yes |
-| Say what date the warning is from and that it covers 24 hours | Must | 1, 6 | Only on the computer |
-| Search for a **district** or province by name, not only a department | Must | 1, 5 | No: departments only |
+| Say what date the warning is from and that it covers 24 hours, and flag it when it is out of date | Must | 1, 6 | Yes |
+| Search for a **district** or province by name, not only a department | Must | 1, 5 | Yes |
+| Search by town or city name (Chosica is in the Lurigancho district) | Should | 1 | No |
 | The source (SENAMHI), that it is not an official site, and emergency numbers (115, 116) | Must | 6 | Yes (in the open sheet) |
 | Rain over the last hours and the forecast, with controls within thumb reach | Should | 3 | Yes |
 | A share button (the phone's menu) with the warning text | Should | 5 | No |

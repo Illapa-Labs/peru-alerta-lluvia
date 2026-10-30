@@ -161,6 +161,18 @@ export interface MapHandlers {
   onHover(longitude: number, latitude: number): HoverTarget | undefined
 }
 
+/**
+ * Lo que tapa el mapa en cada borde. En el celular el mapa ocupa toda la pantalla: arriba están el buscador y la
+ * leyenda, y abajo la hoja del panel (su alto lo dice --sheet, ver main.ts) con la lluvia encima. Al encuadrar un lugar
+ * se deja ese espacio. No se usa map.setPadding: cambiarlo mientras el mapa se mueve detiene el movimiento.
+ */
+export function viewPadding(): { top: number; bottom: number; left: number; right: number } {
+  if (!matchMedia('(max-width: 800px)').matches) return { top: 40, bottom: 40, left: 40, right: 40 }
+  const sheet = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sheet')) || 150
+  const RAIN_BAR = 100
+  return { top: 96, bottom: sheet + RAIN_BAR + 12, left: 16, right: 16 }
+}
+
 export async function createMap(container: HTMLElement, data: AppData, handlers: MapHandlers): Promise<MapApi> {
   const [maplibregl] = await Promise.all([import('maplibre-gl'), import('maplibre-gl/dist/maplibre-gl.css')])
 
@@ -273,16 +285,17 @@ export async function createMap(container: HTMLElement, data: AppData, handlers:
     reveal(bounds) {
       const [west, south, east, north] = bounds
       const canvas = map.getCanvas()
-      const margin = 40
+      const padding = viewPadding()
       const visible = [[west, south], [east, south], [east, north], [west, north]].every((corner) => {
         const point = map.project(corner as [number, number])
-        return point.x >= margin && point.y >= margin && point.x <= canvas.clientWidth - margin && point.y <= canvas.clientHeight - margin
+        return point.x >= padding.left && point.y >= padding.top && point.x <= canvas.clientWidth - padding.right && point.y <= canvas.clientHeight - padding.bottom
       })
-      if (!visible) map.easeTo({ center: [(west + east) / 2, (south + north) / 2], duration: 800 })
+      // Si no se ve entero, se encuadra (sin acercar más que ahora)
+      if (!visible) map.fitBounds(bounds, { padding, maxZoom: map.getZoom(), duration: 800 })
     },
     fit(bounds, animate = true, maxZoom = 11) {
       map.fitBounds(bounds, {
-        padding: 40,
+        padding: viewPadding(),
         pitch: 25,
         bearing: 0,
         maxZoom,

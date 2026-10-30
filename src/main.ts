@@ -168,15 +168,27 @@ async function main() {
     else void applyRoute(next)
   })
 
-  // ---- El buscador de departamentos ----
-  setupSearch(data, (department) => {
-    show(department, 'mapa')
-    fit(department.bounds)
+  // ---- El buscador de lugares ----
+  setupSearch(data, (place) => {
+    if (place.kind === 'department') {
+      show(place.department, 'mapa')
+      fit(place.department.bounds)
+    } else {
+      // Una provincia o un distrito: el mapa va a su provincia, y el distrito queda elegido dentro de ella. El encuadre de
+      // la provincia va al final: si no, lo cortaría el movimiento que hace el distrito para verse
+      const { shapes } = place
+      shapesReady = shapes
+      const shape = place.kind === 'district' ? shapes.list.find((candidate) => candidate.ubigeo === place.ubigeo) : undefined
+      const prefix = place.kind === 'district' ? place.ubigeo.slice(0, 4) : place.prefix
+      if (shape) chooseDistrict(shapes, shape)
+      else focusProvince(shapes, prefix, false)
+      fit(boundsOfShapes(provinceShapes(shapes, prefix)), 11)
+    }
     syncUrl()
   })
 
   // ---- El mapa, después ----
-  const { createMap } = await import('./map')
+  const { createMap, viewPadding } = await import('./map')
   mapApi = await createMap($('mapa'), data, {
     onClick(longitude, latitude) {
       // Se baja de a un escalón: en otro departamento el toque lo elige entero; dentro del departamento que ya se ve,
@@ -242,23 +254,20 @@ async function main() {
   if ((map as any).style?._loaded) showRain()
   else map.once('load', showRain)
   mapApi.select(selected)
-  // En el celular el mapa ocupa toda la pantalla, con el buscador y la leyenda arriba y, abajo, la hoja del panel y la
-  // lluvia encima. Lo que se encuadra (y el centro del mapa) es lo que queda libre entre ellos; la hoja cambia de alto
-  // con el lugar.
-  const narrow = window.matchMedia('(max-width: 800px)').matches
+  // En el celular la hoja del panel cambia de alto con el lugar: la lluvia va encima de ella, y el mapa deja ese espacio
+  // al encuadrar (ver viewPadding en map.ts)
   const peek = document.querySelector<HTMLElement>('#panel .peek')
-  if (narrow && peek) {
-    const RAIN_BAR = 100
+  if (peek) {
     const follow = () => {
-      if (document.getElementById('panel')!.classList.contains('sheet-open')) return
-      document.documentElement.style.setProperty('--sheet', `${peek.offsetHeight}px`)
-      map.setPadding({ top: 84, bottom: peek.offsetHeight + RAIN_BAR, left: 0, right: 0 })
+      if (peek.offsetHeight > 0 && !document.getElementById('panel')!.classList.contains('sheet-open')) {
+        document.documentElement.style.setProperty('--sheet', `${peek.offsetHeight}px`)
+      }
     }
     new ResizeObserver(follow).observe(peek)
     follow()
   }
   // Sin vuelo y sin inclinar, para que entre todo el Perú (con el mapa inclinado se cortaba el sur)
-  if (pendingFit) mapApi.map.fitBounds(pendingFit, { padding: narrow ? 12 : 40, pitch: 0, bearing: 0, duration: 0 })
+  if (pendingFit) mapApi.map.fitBounds(pendingFit, { padding: viewPadding(), pitch: 0, bearing: 0, duration: 0 })
 
   // Con buena conexión las formas se bajan en cuanto el mapa está listo, para que el primer toque ya sea por provincia
   const connection = (navigator as any).connection as { saveData?: boolean; effectiveType?: string } | undefined
