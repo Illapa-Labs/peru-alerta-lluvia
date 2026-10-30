@@ -242,11 +242,23 @@ async function main() {
   if ((map as any).style?._loaded) showRain()
   else map.once('load', showRain)
   mapApi.select(selected)
-  // Sin vuelo y sin inclinar, para que entre todo el Perú (con el mapa inclinado se cortaba el sur)
-  // En el celular el mapa es la mitad de arriba y la barra de la lluvia tapa su parte de abajo: se deja ese espacio
+  // En el celular el mapa ocupa toda la pantalla, con el buscador y la leyenda arriba y, abajo, la hoja del panel y la
+  // lluvia encima. Lo que se encuadra (y el centro del mapa) es lo que queda libre entre ellos; la hoja cambia de alto
+  // con el lugar.
   const narrow = window.matchMedia('(max-width: 800px)').matches
-  const padding = narrow ? { top: 56, bottom: 140, left: 16, right: 16 } : 40
-  if (pendingFit) mapApi.map.fitBounds(pendingFit, { padding, pitch: 0, bearing: 0, duration: 0 })
+  const peek = document.querySelector<HTMLElement>('#panel .peek')
+  if (narrow && peek) {
+    const RAIN_BAR = 100
+    const follow = () => {
+      if (document.getElementById('panel')!.classList.contains('sheet-open')) return
+      document.documentElement.style.setProperty('--sheet', `${peek.offsetHeight}px`)
+      map.setPadding({ top: 84, bottom: peek.offsetHeight + RAIN_BAR, left: 0, right: 0 })
+    }
+    new ResizeObserver(follow).observe(peek)
+    follow()
+  }
+  // Sin vuelo y sin inclinar, para que entre todo el Perú (con el mapa inclinado se cortaba el sur)
+  if (pendingFit) mapApi.map.fitBounds(pendingFit, { padding: narrow ? 12 : 40, pitch: 0, bearing: 0, duration: 0 })
 
   // Con buena conexión las formas se bajan en cuanto el mapa está listo, para que el primer toque ya sea por provincia
   const connection = (navigator as any).connection as { saveData?: boolean; effectiveType?: string } | undefined

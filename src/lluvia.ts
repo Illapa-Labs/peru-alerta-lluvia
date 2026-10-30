@@ -162,7 +162,7 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     slider.value = String(Math.round((now - first()) / 60_000))
     // La hora, a los 10 minutos
     label.textContent = hourFormat.format(new Date(Math.round(now / 600_000) * 600_000))
-    kind.textContent = frames[f > 0.5 ? i + 1 : i]!.forecast ? 'Pronóstico · mm/h · hora de Lima' : 'Ya cayó · mm/h · hora de Lima'
+    kind.textContent = frames[f > 0.5 ? i + 1 : i]!.forecast ? 'Pronóstico · hora de Lima' : 'Ya cayó · hora de Lima'
   }
 
   const tick = (stamp: number) => {
@@ -199,9 +199,12 @@ export function setupRain(map: GlMap, peru: Ring[]) {
       'Lo que ya cayó: satélite de la NASA, con unas 6 horas de retraso.',
       future.length ? `Lo que viene: ${forecastCredit()}, unos 22 km, por hora.` : '',
     ].join(' ')
-    const attribution = 'Lluvia: NASA GPM IMERG (GIBS)'
+    // El crédito va en la atribución del mapa (en el celular la nota no se ve). El del pronóstico va con el de la NASA:
+    // una fuente de imagen no lleva atribución.
+    const forecast = forecastCredit()
+    const attribution = ['Lluvia: NASA GPM IMERG (GIBS)', future.length ? forecast[0]!.toUpperCase() + forecast.slice(1) : ''].filter(Boolean).join(' · ')
     frames.forEach((frame, i) => {
-      // Los mosaicos de la NASA van en una capa cada uno (el crédito del pronóstico va en la nota)
+      // Los mosaicos de la NASA van en una capa cada uno
       if (frame.source.type !== 'raster') return
       map.addSource(layerId(i), { ...frame.source, ...(i === 0 ? { attribution } : {}) })
       // Debajo del aviso (que tiene prioridad), encima del relieve. Todas a la vez (invisibles) para que ya estén bajadas.

@@ -43,6 +43,7 @@ a { color: var(--blue); }
 
 #legend { left: calc(min(var(--panel), 45vw) + 20px); bottom: 36px; padding: 12px 14px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
 #legend b { font-size: 12px; color: #33404d; }
+#legend .legend-source { font-weight: 400; color: var(--muted); }
 #legend .bar { display: flex; }
 #legend .bar span { width: 75px; height: 10px; }
 #legend .bar span:first-child { border-radius: 5px 0 0 5px; }
@@ -62,13 +63,15 @@ a { color: var(--blue); }
 .rain-close:hover { background: #f3f6f8; }
 /* La escala de la lluvia (logarítmica, de 0,1 a 53 mm/h): los mismos colores que src/escala.ts */
 .rain-scale { height: 8px; border-radius: 4px; background: linear-gradient(90deg, rgb(160,214,250) 0%, rgb(90,170,240) 30%, rgb(40,110,225) 50%, rgb(40,50,180) 68%, rgb(100,30,170) 82%, rgb(160,20,150) 100%); }
-.rain-ticks { position: relative; height: 14px; font-size: 10px; color: #33404d; }
-.rain-ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
-.rain-ticks span:nth-child(1) { left: 0; transform: none; }
-.rain-ticks span:nth-child(2) { left: 37%; }
-.rain-ticks span:nth-child(3) { left: 63%; }
-.rain-ticks span:nth-child(4) { left: 85%; }
-.rain-ticks span:nth-child(5) { right: 0; transform: none; }
+/* La escala en palabras y, debajo, en mm por hora, con los cortes de lluvia por hora (escala logarítmica de 0,1 a 53
+   mm/h, ver src/escala.ts): llovizna hasta 2 mm/h (48 %), moderada hasta 15 (80 %), fuerte desde ahí */
+.rain-ticks { position: relative; height: 28px; font-size: 11px; font-weight: 600; color: #33404d; }
+.rain-ticks span { position: absolute; top: 0; display: flex; flex-direction: column; align-items: center; line-height: 1.25; white-space: nowrap; }
+.rain-ticks small { font-size: 10px; font-weight: 400; color: var(--muted); }
+.rain-ticks span + span { border-left: 1px solid #9aa7b4; }
+.rain-ticks span:nth-child(1) { left: 0; width: 48%; }
+.rain-ticks span:nth-child(2) { left: 48%; width: 32%; }
+.rain-ticks span:nth-child(3) { left: 80%; width: 20%; }
 .rain-note { margin: 0; font-size: 11px; color: var(--muted); }
 
 /* La atribución de MapLibre */
@@ -146,22 +149,74 @@ a { color: var(--blue); }
 .panel-footer { margin-top: auto; padding: 16px 24px 20px; border-top: 1px solid var(--soft-line); font-size: 12px; line-height: 1.5; color: var(--muted); }
 .panel-footer .warning { margin: 0 0 8px; color: #8e1c24; }
 
-/* En una pantalla angosta el panel va debajo del mapa */
+/* La leyenda y la lluvia van sueltas sobre el mapa (cada una con su posición); el contenedor no se ve */
+#dock { display: contents; }
+
+/* La hoja de abajo solo existe en el celular */
+.peek { display: none; }
+
+/* En una pantalla angosta el mapa ocupa toda la pantalla. El panel es una hoja al pie: cerrada muestra el lugar, su
+   aviso y qué hacer (--sheet es su alto, lo pone main.ts); abierta, todo el detalle. Sobre el mapa flotan el buscador
+   y la leyenda (arriba) y la lluvia (abajo, encima de la hoja, donde llega el pulgar). */
 @media (max-width: 800px) {
-  :root { --panel: 100vw; }
-  #panel { top: 50%; width: 100%; border-right: 0; border-top: 1px solid var(--line); }
-  #mapa { left: 0; bottom: 50%; }
-  .map-loading { top: 50%; }
-  #legend { left: 8px; bottom: calc(50% + 44px); padding: 8px 10px; gap: 5px; }
-  #legend b { font-size: 11px; }
-  #legend .bar span { width: 50px; height: 8px; }
-  #legend .names { width: 150px; font-size: 10px; }
-  #search { top: 8px; right: 8px; width: min(280px, calc(100vw - 16px)); }
-  #lluvia { right: 8px; bottom: calc(50% + 44px); }
-  .rain-open { height: 36px; padding: 0 10px; font-size: 12px; }
-  .rain-controls { width: calc(100vw - 16px); padding: 8px 10px; gap: 4px; }
-  .rain-note { display: none; }
+  :root { --panel: 100vw; --sheet: 150px; }
+  #mapa { left: 0; }
+  #panel {
+    top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-height: 85dvh; z-index: 4;
+    border-right: 0; border-radius: 16px 16px 0 0; box-shadow: 0 -4px 16px rgba(23, 32, 42, 0.16); overflow: hidden;
   }
+  #panel.sheet-open { height: 85dvh; overflow-y: auto; }
+  #panel:not(.sheet-open) > :not(.peek) { display: none; }
+  .peek {
+    position: sticky; top: 0; z-index: 1; display: flex; flex-direction: column; gap: 4px; width: 100%;
+    padding: 6px 14px 12px; border: 0; border-bottom: 1px solid var(--soft-line); background: #fff; text-align: left; cursor: pointer;
+  }
+  .peek-handle { align-self: center; width: 36px; height: 4px; margin-bottom: 4px; border-radius: 2px; background: #c3ccd5; }
+  .peek-row { display: flex; align-items: center; gap: 10px; }
+  .peek-badge { flex: none; width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; font-weight: 800; }
+  .peek-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .peek-place { font-size: 18px; font-weight: 800; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .peek-where { font-size: 12px; color: var(--muted); }
+  .peek-more { flex: none; font-size: 12px; font-weight: 700; color: var(--blue); }
+  .peek-level { font-size: 13px; font-weight: 700; }
+  .peek-amount { font-size: 12px; font-weight: 400; white-space: nowrap; }
+  /* Abierta, el nombre del lugar ya está en la cabecera de la hoja */
+  #panel .place-name { display: none; }
+  .peek-todo { font-size: 13px; line-height: 1.4; color: var(--text); }
+  .peek-hint { font-size: 12px; color: var(--muted); }
+
+  /* La atribución («i») va debajo del buscador */
+  #mapa .maplibregl-ctrl-top-right { top: 46px; }
+  #dock .float { box-shadow: 0 1px 6px rgba(23, 32, 42, 0.18); }
+
+  /* La leyenda, chica, arriba a la izquierda del buscador: «Aviso de lluvia», de quién es y para cuánto tiempo, y lo que dice cada color, uno debajo del
+     otro (el color solo no basta, y el número del nivel no le dice nada a nadie) */
+  #legend { left: 8px; right: auto; top: 8px; bottom: auto; gap: 3px; padding: 6px 10px; border-radius: 10px; }
+  #legend b { font-size: 11px; }
+  #legend .legend-source { display: block; font-size: 10px; }
+  #legend .bar { display: none; }
+  #legend .names { display: flex; flex-direction: column; gap: 3px; width: auto; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  #legend .names span { display: inline-flex; align-items: center; gap: 5px; }
+  #legend .names span::before { content: ''; width: 10px; height: 10px; border-radius: 50%; }
+  #legend .names span:nth-child(1)::before { background: #F4C430; }
+  #legend .names span:nth-child(2)::before { background: #EE7D2B; }
+  #legend .names span:nth-child(3)::before { background: #C3262F; }
+
+  /* La lluvia, compacta, encima de la hoja y a todo el ancho */
+  #lluvia { top: auto; left: 8px; right: 8px; bottom: calc(var(--sheet) + 8px); border-radius: 12px; }
+  #lluvia:has(.rain-open:not([hidden])) { left: auto; }
+  .rain-open { height: 34px; padding: 0 12px; font-size: 12px; }
+  .rain-controls { width: 100%; padding: 6px 10px 4px; gap: 3px; }
+  .rain-row { gap: 8px; }
+  .rain-play { width: 28px; height: 28px; font-size: 11px; }
+  .rain-close { width: 24px; height: 24px; }
+  .between-row { font-size: 12px; }
+  .rain-scale { height: 5px; }
+  .rain-note { display: none; }
+
+  #search { top: 8px; right: 8px; width: min(220px, calc(100vw - 16px)); }
+  #search input { height: 40px; }
+}
 
 /* El atributo hidden tiene que ganarle a cualquier display que se ponga */
 [hidden] { display: none !important; }
@@ -194,3 +249,59 @@ a { color: var(--blue); }
 /* Solo para buscadores y lectores de pantalla: no se ve, pero se lee */
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .noscript { padding: 16px 24px; font-size: 16px; }
+
+/* En el celular el panel va apretado: sin el encabezado (la leyenda ya dice qué es) y con menos aire, para que el mapa
+   tenga más alto. Va al final para ganarle a las reglas de arriba. */
+@media (max-width: 800px) {
+  .panel-header { display: none; }
+  .block { padding: 12px 14px 4px; gap: 8px; }
+  .block.tight { padding-top: 4px; }
+  .block h2 { font-size: 11px; }
+  .place { gap: 8px; }
+  .block h2.place-title, .place-title { font-size: 20px; }
+  .crumbs { font-size: 12px; }
+  .sub { font-size: 11px; }
+  .card { padding: 12px; gap: 8px; border-radius: 12px; }
+  .card-title { font-size: 16px; }
+  .body, .lead, .row { font-size: 13px; line-height: 1.4; }
+  .level-header { gap: 10px; }
+  .badge { width: 44px; height: 44px; border-radius: 10px; }
+  .badge-label { font-size: 8px; }
+  .badge-number { font-size: 20px; }
+  .level-name { font-size: 18px; }
+  .level-rain { font-size: 13px; }
+  .todo { padding: 8px 10px; }
+  .alert { padding: 10px; gap: 8px; }
+  .alert p { font-size: 13px; }
+  .level-button { min-height: 60px; gap: 4px; padding-bottom: 6px; }
+  .level-button .bar { height: 6px; }
+  .level-number { font-size: 17px; }
+  .level-short { font-size: 11px; }
+  .stat { padding: 8px; }
+  .folds { padding-top: 8px; gap: 6px; }
+  .fold { min-height: 40px; padding: 0 12px; font-size: 13px; }
+  .what, .official { padding: 2px 10px 6px; font-size: 13px; line-height: 1.45; }
+  .districts { gap: 6px; }
+  .districts li { font-size: 13px; }
+  .district-title { font-size: 18px; }
+  .exposure { padding: 8px 10px; font-size: 13px; }
+  .panel-footer { padding: 10px 14px 14px; font-size: 11px; }
+}
+
+/* Más apretado aún: en la lista de distritos basta el nombre y la provincia (el detalle de la zona está al abrir cada
+   uno) */
+@media (max-width: 800px) {
+  .district-zone { display: none; }
+  .districts { gap: 4px; }
+  .districts li { padding: 3px 6px; margin: -3px -6px; }
+  .district-text { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 6px; }
+  .district-detail { font-size: 11px; }
+}
+
+/* En el celular lo primero que se ve del aviso es el nivel y qué hacer; la explicación va después. La etiqueta
+   «Distrito · Piura» sobra: las migas de arriba ya lo dicen. */
+@media (max-width: 800px) {
+  .card .level-header { order: -2; }
+  .card .todo { order: -1; }
+  .crumbs ~ .place-name .label { display: none; }
+}

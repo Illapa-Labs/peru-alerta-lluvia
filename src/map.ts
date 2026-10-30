@@ -165,6 +165,7 @@ export async function createMap(container: HTMLElement, data: AppData, handlers:
   const [maplibregl] = await Promise.all([import('maplibre-gl'), import('maplibre-gl/dist/maplibre-gl.css')])
 
   maplibregl.setWorkerUrl(workerUrl)
+  const narrow = matchMedia('(max-width: 800px)').matches
   const map = new maplibregl.Map({
     container,
     style: style(data),
@@ -172,7 +173,7 @@ export async function createMap(container: HTMLElement, data: AppData, handlers:
     maxBounds: MAX_BOUNDS,
     minZoom: 4,
     maxPitch: 80,
-    attributionControl: { compact: true },
+    attributionControl: false,
     // Gastar menos: sin antialiasing, y los mosaicos que no se ven no se guardan de más
     canvasContextAttributes: { antialias: false },
     maxTileCacheSize: 60,
@@ -180,6 +181,19 @@ export async function createMap(container: HTMLElement, data: AppData, handlers:
   // Solo en desarrollo: para mirar el mapa desde la consola
   if (import.meta.env.DEV) (window as any).__map = map
   map.touchZoomRotate.enableRotation()
+
+  // La atribución: en el celular va arriba, debajo del buscador (abajo están la lluvia y la hoja del panel), y empieza
+  // cerrada en el botón «i» (MapLibre la abre al cargar los datos; se cierra apenas lo hace). En escritorio hay lugar:
+  // va abajo y queda abierta.
+  map.addControl(new maplibregl.AttributionControl({ compact: true }), narrow ? 'top-right' : 'bottom-right')
+  const collapseAttribution = () => {
+    const attribution = container.querySelector('.maplibregl-ctrl-attrib.maplibregl-compact-show')
+    if (!attribution) return
+    attribution.classList.remove('maplibregl-compact-show')
+    attribution.removeAttribute('open')
+    map.off('sourcedata', collapseAttribution)
+  }
+  if (narrow) map.on('sourcedata', collapseAttribution)
 
   // Un toque sin arrastrar pregunta por el lugar
   map.on('click', (event: MapMouseEvent) => handlers.onClick(event.lngLat.lng, event.lngLat.lat))
