@@ -198,7 +198,7 @@ export interface MapHandlers {
 export function viewPadding(): { top: number; bottom: number; left: number; right: number } {
   if (!matchMedia('(max-width: 800px)').matches) return { top: 40, bottom: 40, left: 40, right: 40 }
   const sheet = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sheet')) || 150
-  const RAIN_BAR = 100
+  const RAIN_BAR = 130
   return { top: 96, bottom: sheet + RAIN_BAR + 12, left: 16, right: 16 }
 }
 

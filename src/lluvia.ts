@@ -9,6 +9,7 @@ import { addProtocol, type Map as GlMap } from 'maplibre-gl'
 import type { Ring } from './data'
 import { PALETTE, colorIndex } from './escala'
 import { NASA_RAIN_COLORS } from './lluvia-nasa-colores'
+import { api } from './api'
 import { forecastCredit, forecastFrames } from './pronostico'
 
 const GIBS = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best'
@@ -99,6 +100,14 @@ export function setupRain(map: GlMap, peru: Ring[]) {
   const kind = $('lluvia-fuente')
   const note = $('lluvia-nota')
   const close = $<HTMLButtonElement>('lluvia-cerrar')
+  const rainButton = $<HTMLButtonElement>('lluvia-modo-lluvia')
+  const cloudsButton = $<HTMLButtonElement>('lluvia-modo-nubes')
+  const rainTicks = controls.querySelector<HTMLElement>('.rain-ticks:not(.cloud-ticks)')!
+  const cloudTicks = controls.querySelector<HTMLElement>('.cloud-ticks')!
+  /** Qué se muestra: la lluvia (lo que cayó y el pronóstico) o las nubes del satélite GOES-19 de las últimas 12 horas */
+  let mode: 'lluvia' | 'nubes' = 'lluvia'
+  // Las imágenes de nubes ya traen su transparencia (cielo despejado), así que van sin atenuar
+  const opacity = () => (mode === 'nubes' ? 1 : OPACITY)
 
   let frames: Frame[] = []
   /** Las capas visibles ahora y su opacidad, para tocar solo las que cambian */
@@ -169,15 +178,15 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     const t0 = frames[i]!.time.getTime()
     const t1 = frames[i + 1]?.time.getTime() ?? t0
     const f = t1 > t0 ? (now - t0) / (t1 - t0) : 0
-    const next = new Map<string, number>([[layerFor(i), OPACITY * (1 - f)]])
-    if (f > 0) next.set(layerFor(i + 1), OPACITY * f)
+    const next = new Map<string, number>([[layerFor(i), opacity() * (1 - f)]])
+    if (f > 0) next.set(layerFor(i + 1), opacity() * f)
     for (const [layer] of visible) if (!next.has(layer)) map.setPaintProperty(layer, 'raster-opacity', 0)
     for (const [layer, opacity] of next) if (visible.get(layer) !== opacity) map.setPaintProperty(layer, 'raster-opacity', opacity)
     visible = next
     slider.value = String(Math.round((now - first()) / 60_000))
     // La hora, a los 10 minutos
     label.textContent = hourFormat.format(new Date(Math.round(now / 600_000) * 600_000))
-    kind.textContent = frames[f > 0.5 ? i + 1 : i]!.forecast ? 'Pronóstico · hora de Lima' : 'Ya cayó · hora de Lima'
+    kind.textContent = mode === 'nubes' ? 'Satélite · hora de Lima' : frames[f > 0.5 ? i + 1 : i]!.forecast ? 'Pronóstico · hora de Lima' : 'Ya cayó · hora de Lima'
   }
 
   const tick = (stamp: number) => {
@@ -204,9 +213,47 @@ export function setupRain(map: GlMap, peru: Ring[]) {
   }
 
 
+  /** Las nubes del satélite de las últimas 12 horas (una imagen cada 30 minutos y la última), de la API */
+  const cloudFrames = async (): Promise<Frame[] | undefined> => {
+    try {
+      const response = await fetch(api('/v1/nubes'), { signal: AbortSignal.timeout(8000) })
+      if (!response.ok) return undefined
+      const data: { oeste: number; sur: number; este: number; norte: number; imagenes: { hora: string; url: string }[] } = await response.json()
+      const coordinates: [[number, number], [number, number], [number, number], [number, number]] = [[data.oeste, data.norte], [data.este, data.norte], [data.este, data.sur], [data.oeste, data.sur]]
+      return data.imagenes.map((image) => ({ time: new Date(image.hora), source: { type: 'image' as const, url: api(image.url), coordinates } }))
+    } catch {
+      return undefined
+    }
+  }
+
+  const showClouds = async () => {
+    const clouds = await cloudFrames()
+    if (!clouds?.length) {
+      // Sin imágenes (la API todavía no las tiene): se vuelve a la lluvia y se dice por qué
+      cloudsButton.disabled = true
+      setMode('lluvia')
+      await openRain()
+      note.textContent = 'Las nubes del satélite no están disponibles ahora. ' + note.textContent
+      return
+    }
+    frames = clouds
+    note.textContent = 'Nubes del satélite GOES-19 (NOAA), infrarrojo de 10,3 µm, de las últimas 12 horas: la temperatura del tope de la nube. Cuanto más fría, más alta la nube; los colores marcan los topes de tormenta.'
+    for (const slot of SLOTS) {
+      map.addSource(slot, { type: 'image', url: urlOf(frames.at(-1)!.source as { url: string }), coordinates: (frames[0]!.source as { coordinates: [[number, number], [number, number], [number, number], [number, number]] }).coordinates })
+      map.addLayer({ id: slot, type: 'raster', source: slot, paint: { 'raster-opacity': 0, 'raster-fade-duration': 0 } }, 'aviso-relleno')
+    }
+    slotImage.set(SLOTS[(frames.length - 1) % 2]!, frames.length - 1)
+    slider.max = String(Math.round((last() - first()) / 60_000))
+    slider.step = '10'
+    open.hidden = true
+    controls.hidden = false
+    showAt(last())
+  }
+
   const openRain = async () => {
     open.disabled = true
     open.textContent = 'Cargando la lluvia…'
+    if (mode === 'nubes') return showClouds()
     const past = await imergFrames()
     const future = await forecastFrames(peru, past.at(-1)!.time.getTime())
     frames = [...past, ...future.map(({ time, url, coordinates }) => ({ time, forecast: true, source: { type: 'image' as const, url, coordinates } }))]
@@ -246,7 +293,8 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     warm()
     showAt(first() + Number(slider.value) * 60_000)
   })
-  close.addEventListener('click', () => {
+  /** Quita las capas de lo que se está mostrando */
+  const clear = () => {
     pause()
     for (const id of [...frames.map((_, i) => layerId(i)), ...SLOTS]) removeLayer(id)
     if (terrain) map.setTerrain(terrain)
@@ -256,6 +304,25 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     slotImage.clear()
     frames = []
     visible = new Map()
+  }
+  const setMode = (next: 'lluvia' | 'nubes') => {
+    mode = next
+    rainButton.setAttribute('aria-pressed', String(next === 'lluvia'))
+    cloudsButton.setAttribute('aria-pressed', String(next === 'nubes'))
+    controls.classList.toggle('clouds', next === 'nubes')
+    rainTicks.hidden = next === 'nubes'
+    cloudTicks.hidden = next !== 'nubes'
+  }
+  const switchTo = (next: 'lluvia' | 'nubes') => {
+    if (next === mode) return
+    clear()
+    setMode(next)
+    void openRain()
+  }
+  rainButton.addEventListener('click', () => switchTo('lluvia'))
+  cloudsButton.addEventListener('click', () => switchTo('nubes'))
+  close.addEventListener('click', () => {
+    clear()
     controls.hidden = true
     open.hidden = false
     open.disabled = false

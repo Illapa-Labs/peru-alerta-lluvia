@@ -86,6 +86,17 @@ a { color: var(--blue); }
 .rain-ticks span:nth-child(2) { left: 48%; width: 32%; }
 .rain-ticks span:nth-child(3) { left: 80%; width: 20%; }
 .rain-note { margin: 0; font-size: 11px; color: var(--muted); }
+/* Lluvia o nubes del satélite: dos botones, el elegido marcado */
+.rain-modes { display: flex; gap: 4px; }
+.rain-mode { flex: 1; height: 26px; padding: 0 8px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; }
+.rain-mode[aria-pressed='true'] { border-color: var(--text); background: var(--text); color: #fff; }
+.rain-mode:disabled { opacity: 0.5; cursor: default; }
+/* Las nubes: la escala va por la temperatura del tope de la nube, de -10 °C (izquierda) a -85 °C (derecha), con los
+   mismos colores que las imágenes de la API (illapa-engine, src/clouds.rs) */
+.clouds .rain-scale { background: linear-gradient(90deg, rgba(200,205,212,0.4) 0%, rgb(190,196,204) 13%, rgb(150,158,168) 33%, rgb(90,200,225) 47%, rgb(40,120,220) 60%, rgb(90,40,190) 73%, rgb(190,40,200) 87%, rgb(255,255,255) 100%); border: 1px solid var(--line); }
+.cloud-ticks span:nth-child(1) { left: 0; width: 40%; }
+.cloud-ticks span:nth-child(2) { left: 40%; width: 27%; }
+.cloud-ticks span:nth-child(3) { left: 67%; width: 33%; }
 
 /* La atribución de MapLibre */
 .maplibregl-ctrl-attrib { font-size: 11px; }
