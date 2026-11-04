@@ -9,7 +9,7 @@ import { addProtocol, type Map as GlMap } from 'maplibre-gl'
 import type { Ring } from './data'
 import { PALETTE, colorIndex } from './escala'
 import { NASA_RAIN_COLORS } from './lluvia-nasa-colores'
-import { forecastCredit, forecastFrames } from './pronostico'
+import { forecastCredit, forecastFineZones, forecastFrames } from './pronostico'
 
 const GIBS = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best'
 /** Los mosaicos de la NASA se piden con este protocolo, que los vuelve a pintar (ver `recolor`) */
@@ -213,6 +213,7 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     note.textContent = [
       'Lo que ya cayó: satélite de la NASA, con unas 6 horas de retraso.',
       future.length ? `Lo que viene: ${forecastCredit()}, unos 22 km, por hora.` : '',
+      future.length && forecastFineZones().length ? `Más fino (unos 11 km) en ${forecastFineZones().join(', ')}.` : '',
     ].join(' ')
     // El crédito va en la atribución del mapa (en el celular la nota no se ve). El del pronóstico va con el de la NASA:
     // una fuente de imagen no lleva atribución.
