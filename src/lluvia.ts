@@ -57,6 +57,8 @@ const HOURS = 24
 /** Solo se piden mosaicos que tocan el Perú */
 const PERU: [number, number, number, number] = [-82, -19, -68, 1]
 const OPACITY = 0.85
+/** El fundido entre dos imágenes de nubes: la opacidad es f elevado a esto (0,62 deja las dos al 65 % a la mitad) */
+const CLOUD_FADE = 0.62
 /** Al reproducir, cada hora de lluvia dura esto en pantalla */
 const HOUR_MS = 800
 
@@ -178,8 +180,11 @@ export function setupRain(map: GlMap, peru: Ring[]) {
     const t0 = frames[i]!.time.getTime()
     const t1 = frames[i + 1]?.time.getTime() ?? t0
     const f = t1 > t0 ? (now - t0) / (t1 - t0) : 0
-    const next = new Map<string, number>([[layerFor(i), opacity() * (1 - f)]])
-    if (f > 0) next.set(layerFor(i + 1), opacity() * f)
+    // Las nubes son casi opacas: con las dos a la mitad, una sobre otra se aclaraban (un tope de tormenta al 90 % bajaba
+    // al 70 %) en cada cambio, cada 30 minutos, y parpadeaban. Con las dos a un 65 % a la mitad se ven casi igual.
+    const curve = (x: number) => (mode === 'nubes' ? x ** CLOUD_FADE : x)
+    const next = new Map<string, number>([[layerFor(i), opacity() * curve(1 - f)]])
+    if (f > 0) next.set(layerFor(i + 1), opacity() * curve(f))
     for (const [layer] of visible) if (!next.has(layer)) map.setPaintProperty(layer, 'raster-opacity', 0)
     for (const [layer, opacity] of next) if (visible.get(layer) !== opacity) map.setPaintProperty(layer, 'raster-opacity', opacity)
     visible = next
