@@ -80,6 +80,10 @@
     <section id="lluvia" class="float" aria-label="Lluvia hora por hora">
       <button id="lluvia-abrir" class="rain-open" hidden>▶ Lluvia: últimas 24 h y próximas 24 h</button>
       <div id="lluvia-controles" class="rain-controls" hidden>
+        <div class="rain-modes" role="group" aria-label="Qué mostrar">
+          <button id="lluvia-modo-lluvia" class="rain-mode" aria-pressed="true">Lluvia</button>
+          <button id="lluvia-modo-nubes" class="rain-mode" aria-pressed="false">Nubes del satélite</button>
+        </div>
         <div class="rain-row">
           <button id="lluvia-play" class="rain-play" aria-label="Reproducir">▶</button>
           <input id="lluvia-hora" type="range" min="0" max="23" step="1" value="23" aria-label="Hora">
@@ -88,6 +92,7 @@
         <div class="rain-row between-row"><b id="lluvia-etiqueta">…</b><span id="lluvia-fuente" class="muted">hora de Lima</span></div>
         <div class="rain-scale" aria-hidden="true"></div>
         <div class="rain-ticks"><span>Llovizna<small>menos de 2 mm/h</small></span><span>Moderada<small>2 a 15</small></span><span>Fuerte<small>más de 15</small></span></div>
+        <div class="rain-ticks cloud-ticks" hidden><span>Nubes<small>−10 a −40 °C</small></span><span>Tormenta<small>−40 a −60</small></span><span>Fuerte<small>bajo −60 °C</small></span></div>
         <p id="lluvia-nota" class="rain-note"></p>
       </div>
     </section>
