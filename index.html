@@ -76,6 +76,13 @@
     <div id="legend" class="float">
       <b>Aviso de lluvia <span class="legend-source">SENAMHI · 24 h</span></b>
       <div class="names"><span data-n="2">Moderada</span><span data-n="3">Fuerte</span><span data-n="4">Muy fuerte</span></div>
+      <!-- La capa de inundación de ríos, a pedido: el botón aparece cuando la API la tiene (ver inundaciones.ts) -->
+      <button id="inundacion-abrir" class="legend-toggle" aria-pressed="false" aria-controls="inundacion-leyenda" hidden>+ Inundación de ríos</button>
+      <div id="inundacion-leyenda" class="flood-legend" hidden>
+        <b>Inundación de ríos <span class="legend-source">SENAMHI · por subcuenca</span></b>
+        <div class="flood-names"><span data-n="1">Puede afectar</span><span data-n="2">Erosión</span><span data-n="3">Desborde</span></div>
+        <select id="inundacion-dia" aria-label="Día del aviso de inundación de ríos"></select>
+      </div>
     </div>
     <section id="lluvia" class="float" aria-label="Lluvia hora por hora">
       <button id="lluvia-abrir" class="rain-open" hidden>▶ Lluvia: últimas 24 h y próximas 24 h</button>

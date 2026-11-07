@@ -53,6 +53,26 @@ a { color: var(--blue); }
 #legend .names span:nth-child(1)::before { background: #B08A10; }
 #legend .names span:nth-child(2)::before { background: #B5571A; }
 #legend .names span:nth-child(3)::before { background: #A3222C; }
+/* La capa de inundación de ríos: un botón chico y, encendida, su leyenda con las mismas rayas del mapa */
+#legend .legend-toggle { align-self: flex-start; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 11px; font-weight: 600; color: var(--blue); cursor: pointer; }
+#legend .legend-toggle[aria-pressed='true'] { background: #eef4fb; border-color: #b9cde4; }
+#legend .flood-legend { display: flex; flex-direction: column; gap: 6px; padding-top: 6px; border-top: 1px solid var(--soft-line); }
+#legend .flood-legend[hidden] { display: none; }
+#legend .flood-names { display: flex; gap: 12px; font-size: 11px; font-weight: 600; color: #33404d; }
+#legend .flood-names span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+#legend .flood-names span::before { content: ''; width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--c); background: repeating-linear-gradient(-45deg, var(--c) 0 3px, transparent 3px 6px); }
+#legend .flood-names span:nth-child(1) { --c: #facc15; }
+#legend .flood-names span:nth-child(2) { --c: #f97316; }
+#legend .flood-names span:nth-child(3) { --c: #dc2626; }
+#legend select { max-width: 100%; padding: 4px 6px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font: inherit; font-size: 12px; color: var(--text); }
+
+/* El aviso de inundación de río en el panel del distrito */
+.flood-card { background: #f3f7fb; border-color: #c9d8e8; }
+.flood-card { gap: 6px; }
+.flood-card p { margin: 0; }
+.flood-card .flood-title { display: flex; align-items: flex-start; gap: 8px; font-size: 15px; line-height: 1.35; }
+.flood-card .flood-title + .small { margin-top: 2px; }
+.flood-card .flood-swatch { flex: none; width: 16px; height: 16px; margin-top: 2px; border-radius: 3px; border: 1px solid var(--c); background: repeating-linear-gradient(-45deg, var(--c) 0 3px, transparent 3px 6px); }
 
 /* La marca, arriba del panel en la computadora: el logo y el nombre, que llevan a la página de Illapa Labs */
 .brand { display: flex; align-items: center; gap: 10px; padding: 14px 24px; border-bottom: 1px solid var(--soft-line); color: var(--text); text-decoration: none; }
@@ -227,6 +247,10 @@ a { color: var(--blue); }
   #legend b { font-size: 11px; }
   #legend .legend-source { display: block; font-size: 10px; }
   #legend .names { flex-direction: column; gap: 3px; }
+  #legend .flood-names { flex-direction: column; gap: 3px; }
+  #legend .flood-legend { gap: 3px; padding-top: 4px; }
+  #legend .legend-toggle { padding: 3px 8px; font-size: 10px; }
+  #legend select { font-size: 11px; max-width: 46vw; }
   /* En el celular la marca no va: el espacio es para el mapa (el pie del panel nombra a Illapa Labs) */
   .brand { display: none; }
 

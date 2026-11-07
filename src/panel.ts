@@ -3,6 +3,7 @@
 // interpretan como HTML.
 
 import { CALM, type AppData, type Department, type District, type Home, type Level, type Shape, type Shapes, LEVELS, districtsOf, exposure, homeOf as sharedHomeOf, neighborsOf, normalize, titleCase, withDistricts } from './data'
+import { type Floods, dayLabel, districtFlood } from './inundaciones'
 
 type Child = Node | string
 
@@ -18,6 +19,7 @@ const text = (content: string, className: string) => el('span', className, conte
 // Las páginas oficiales de los avisos. La portada del SENAMHI ya no los muestra: manda al Observatorio del SENAMHI
 const OFFICIAL_RAIN = 'https://observatorio.senamhi.gob.pe/gestion-riesgo-desastres/aviso-lluvias-intensas-24h/'
 const OFFICIAL_RAVINES = 'https://www.senamhi.gob.pe/main.php?p=aviso-activacion-quebrada'
+const OFFICIAL_FLOODS = 'https://observatorio.senamhi.gob.pe/investigadores/agua/sonics'
 
 /** Un enlace que se abre en otra pestaña */
 function outLink(label: string, href: string) {
@@ -72,6 +74,8 @@ export interface PanelApi {
   showDistrict(shape: Shape | undefined, shapes?: Shapes): void
   /** El nombre del departamento que se muestra */
   current(): string | undefined
+  /** Los avisos de inundación de ríos, cuando llegan (se piden después del mapa) */
+  setFloods(floods: Floods): void
 }
 
 export interface PanelHandlers {
@@ -95,6 +99,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
   let province: { name: string; distritos: Shape[] } | undefined
   let chosen: { shape: Shape; province: string } | undefined
   let showAllDistricts = false
+  let floods: Floods | undefined
   // El nivel que se mira en «Qué significa cada nivel»: un índice en LEVELS, o -1 para el verde (sin aviso)
   let picked = highest ?? -1
   const narrow = matchMedia('(max-width: 800px)').matches
@@ -240,6 +245,39 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     )
   }
 
+  /** El aviso de inundación de río del distrito (SONICS-PBI), si tiene: hoy o el próximo día con aviso. */
+  function floodCard(ubigeo: string) {
+    const found = floods && districtFlood(floods, ubigeo)
+    if (!floods || !found) return document.createDocumentFragment()
+    const { day, entry } = found
+    const level = floods.niveles.find((candidate) => candidate.nivel === entry.nivel)
+    const sum = (values: number[]) => values.reduce((a, b) => a + b, 0)
+    const places = sum(entry.centros_poblados)
+    const schools = sum(entry.instituciones_educativas)
+    const health = sum(entry.establecimientos_salud)
+    const plural = (n: number, one: string, many: string) => `${number(n)} ${n === 1 ? one : many}`
+    const swatch = el('span', 'flood-swatch')
+    swatch.style.setProperty('--c', level?.color ?? '#9AA5B1')
+    const headline = `Aviso de inundación de río (SENAMHI): nivel ${entry.nivel}${level ? ` (${level.nombre.toLowerCase()})` : ''}${places > 0 ? `, ${plural(places, 'centro poblado', 'centros poblados')}` : ''}`
+    const also = [schools > 0 ? plural(schools, 'institución educativa', 'instituciones educativas') : '', health > 0 ? plural(health, 'establecimiento de salud', 'establecimientos de salud') : ''].filter(Boolean)
+    const box = card(
+      '',
+      '',
+      el('p', 'flood-title', swatch, el('strong', '', headline)),
+      el('p', 'small', `${dayLabel(day)}${also.length ? ` · también ${also.join(' y ')} en la zona` : ''}.`),
+      // Los centros poblados de cada nivel, cuando hay de más de uno: el más alto no es el de todos
+      entry.centros_poblados.filter((n) => n > 0).length > 1
+        ? el('p', 'small muted', [2, 1, 0].filter((i) => entry.centros_poblados[i]! > 0).map((i) => `${number(entry.centros_poblados[i]!)} en nivel ${i + 1}`).join(' · '))
+        : '',
+      level ? el('p', 'small muted', `${level.peligro} ${level.recomendacion}`) : '',
+      el('p', 'small muted', 'Es la subcuenca donde puede haber impacto: el área que se inunda puede variar dentro de ella. ', outLink('Ver en el SENAMHI', OFFICIAL_FLOODS)),
+    )
+    box.classList.add('flood-card')
+    box.style.removeProperty('background')
+    box.style.removeProperty('border-color')
+    return box
+  }
+
   /** El aviso de una provincia: el nivel más alto de sus distritos. */
   function provinceMain(focus: { name: string; distritos: Shape[] }) {
     const levels = new Map(data.districts.map((district) => [district.ubigeo, district.nivel]))
@@ -343,7 +381,7 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
     if (level === 'district' && chosen) {
       const { shape, province: provinceName } = chosen
       placeBody.append(el('div', 'place-name', text(`Distrito · ${titleCase(provinceName)}`, 'label'), el('h2', 'place-title', titleCase(shape.name)), shape.population ? text(`${number(shape.population)} habitantes · Censo 2017`, 'district-detail') : ''))
-      placeBody.append(districtMain(shape))
+      placeBody.append(districtMain(shape), floodCard(shape.ubigeo))
     } else if (level === 'province' && province) {
       const people = province.distritos.reduce((sum, shape) => sum + shape.population, 0)
       placeBody.append(el('div', 'place-name', text(`Provincia · ${home.name}`, 'label'), el('h2', 'place-title', titleCase(province.name)), text(`${number(people)} habitantes · ${province.distritos.length} distritos`, 'district-detail')))
@@ -629,5 +667,9 @@ export function createPanel(root: HTMLElement, data: AppData, handlers: PanelHan
       update()
     },
     current: () => shown?.home.name,
+    setFloods(value) {
+      floods = value
+      renderPlace()
+    },
   }
 }
