@@ -1,5 +1,6 @@
 import './style.css'
 import { boundsOfShapes, departmentAt, loadData, loadShapes, normalize, provinceShapes, shapeAt, titleCase, type Department, type Shape, type Shapes } from './data'
+import { loadFloods, setupFloods } from './inundaciones'
 import { createPanel } from './panel'
 import { parseRoute, pathOf, slug, type Route } from './rutas'
 import { setupSearch } from './search'
@@ -254,6 +255,14 @@ async function main() {
   if ((map as any).style?._loaded) showRain()
   else map.once('load', showRain)
   mapApi.select(selected)
+  // Los avisos de inundación de ríos, después del mapa: el resumen (unos 14 KB) da la línea del panel del distrito, y la
+  // capa no baja nada hasta que se enciende
+  void loadFloods().then((floods) => {
+    if (!floods) return
+    panel.setFloods(floods)
+    if ((map as any).style?._loaded) setupFloods(map, floods)
+    else map.once('load', () => setupFloods(map, floods))
+  })
   // En el celular la hoja del panel cambia de alto con el lugar: la lluvia va encima de ella, y el mapa deja ese espacio
   // al encuadrar (ver viewPadding en map.ts)
   const peek = document.querySelector<HTMLElement>('#panel .peek')

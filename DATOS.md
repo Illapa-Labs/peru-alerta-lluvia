@@ -9,6 +9,7 @@ Este proyecto no es el dueño de estos datos ni los garantiza.
 | Dato | Fuente | Licencia o términos | Atribución y estado |
 |---|---|---|---|
 | Avisos de lluvia, activación de quebradas y límites de distritos y departamentos | [SENAMHI](https://www.gob.pe/senamhi) | No se encontró una licencia de reutilización publicada | **Pendiente:** se pedirá autorización por escrito a SENAMHI antes de redistribuir sus datos |
+| Avisos de inundación de ríos (SONICS-PBI) y lo expuesto: centros poblados, instituciones educativas, establecimientos de salud y vías | [SENAMHI](https://observatorio.senamhi.gob.pe/investigadores/agua/sonics), vía la API de Illapa | No se encontró una licencia de reutilización publicada | Se cita al SENAMHI en el mapa y en el panel del distrito. **Pendiente:** incluirlos en la autorización que se pedirá al SENAMHI |
 | Población de distritos y departamentos (Censo 2017) | INEI | No verificado | Se cita la fuente. **Pendiente:** verificar las condiciones de reutilización |
 | Lluvia estimada por satélite (GOES-19) | NOAA, vía AWS Open Data | Datos públicos de NOAA (se pueden usar libremente) | Se pide atribución; no se debe sugerir respaldo de NOAA ni presentar datos modificados como originales. No se verificaron los términos específicos de este conjunto de datos |
 | Lluvia de respaldo (IMERG) | NASA, vía GIBS | Los datos de NASA son CC0 por defecto | Se pide citar la fuente. No se leyeron los términos propios de GIBS |
