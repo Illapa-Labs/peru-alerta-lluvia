@@ -66,6 +66,15 @@ a { color: var(--blue); }
 #legend .flood-names span:nth-child(3) { --c: #dc2626; }
 #legend select { max-width: 100%; padding: 4px 6px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font: inherit; font-size: 12px; color: var(--text); }
 
+/* Con el mapa angosto (una ventana de menos de unos 1180 px) la leyenda abajo choca con la tarjeta de la lluvia: sube
+   arriba a la izquierda, con los colores uno debajo del otro, y el buscador se achica para dejarle lugar */
+@media (min-width: 801px) and (max-width: 1180px) {
+  #legend { top: 20px; bottom: auto; width: 180px; gap: 6px; padding: 10px 12px; }
+  #legend .names, #legend .flood-names { flex-direction: column; gap: 4px; }
+  #legend select { width: 100%; }
+  #search { width: min(300px, calc(100vw - min(var(--panel), 45vw) - 240px)); }
+}
+
 /* El aviso de inundación de río en el panel del distrito */
 .flood-card { background: #f3f7fb; border-color: #c9d8e8; }
 .flood-card { gap: 6px; }
@@ -251,6 +260,11 @@ a { color: var(--blue); }
   #legend .flood-legend { gap: 3px; padding-top: 4px; }
   #legend .legend-toggle { padding: 3px 8px; font-size: 10px; }
   #legend select { font-size: 11px; max-width: 46vw; }
+  /* Con el botón de la inundación la leyenda se ensancha (abierta, queda en 150 px): el buscador se achica para no
+     taparle la esquina */
+  #legend:has(.flood-legend:not([hidden])) { width: 150px; }
+  #legend:has(.flood-legend:not([hidden])) select { width: 100%; max-width: none; }
+  body:has(#inundacion-abrir:not([hidden])) #search:not(:focus-within) { width: min(220px, calc(100vw - 174px)); }
   /* En el celular la marca no va: el espacio es para el mapa (el pie del panel nombra a Illapa Labs) */
   .brand { display: none; }
 
