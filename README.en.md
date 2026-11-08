@@ -42,6 +42,10 @@ A slider runs through the last 24 hours of rain seen by satellite (NASA) and the
 
 ![The forecast rain for the next hours over the warning areas](docs/capturas/lluvia.jpg)
 
+### River floods
+
+An on-demand layer ("+ Inundación de ríos", in the legend) shows, striped and under the rain warning, the subbasins where SENAMHI warns that a river may overflow or rise a lot (SONICS-PBI), in three levels, for today and the following days. If the chosen district has a warning, the panel says so, with the populated centers, schools and health facilities in the area.
+
 ### On a phone
 
 Made to be read quickly and on slow connections: the panel shows before the map, which is the heaviest part.

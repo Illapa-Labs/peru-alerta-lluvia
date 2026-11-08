@@ -42,6 +42,10 @@ Una barra recorre las últimas 24 horas de lluvia vista por satélite (NASA) y l
 
 ![La lluvia pronosticada para las próximas horas sobre las zonas del aviso](docs/capturas/lluvia.jpg)
 
+### Inundación de ríos
+
+Una capa a pedido («+ Inundación de ríos», en la leyenda) muestra, rayadas y debajo del aviso de lluvia, las subcuencas donde el SENAMHI avisa que un río puede desbordarse o subir mucho (SONICS-PBI), en tres niveles, para hoy y los días siguientes. Si el distrito elegido tiene aviso, el panel lo dice con los centros poblados, colegios y establecimientos de salud que quedan en la zona.
+
 ### En el celular
 
 Pensada para leerse rápido y con conexión lenta: el panel se muestra antes que el mapa, que es lo más pesado.
